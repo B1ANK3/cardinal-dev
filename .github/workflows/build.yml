@@ -80,7 +80,7 @@ jobs:
         run: yarn && yarn build
 
       # Revisit this branch to when it becomes stable
-      - uses: tauri-apps/tauri-action@fix/json-upload
+      - uses: tauri-apps/tauri-action@dev
         id: tauri-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
