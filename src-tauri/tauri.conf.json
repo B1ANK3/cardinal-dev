@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "cardinal",
-    "version": "0.1.0"
+    "productName": "Cardinal",
+    "version": "0.1.1"
   },
   "tauri": {
     "allowlist": {
@@ -57,9 +57,9 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://app.zexes.io/{{target}}/{{current_version}}"
+        "https://github.com/B1ANK3/cardinal-releases/releases/download/v0.0.1/latest.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4QzdFRUUwMjlBRDdEMDIKUldRQ2ZhMHA0TzdIT0UvMkhtQlF6MEhlS0wxaXBLSFBsb2FwYU9WZWJKS2pLejI5OWgxMzhwK2cK",
       "windows": {
         "installMode": "passive"
@@ -78,16 +78,18 @@
         "resizable": true,
         "title": "cardinal",
         "label": "main",
+        "center": true,
         "width": 800,
         "visible": false
       },
       {
         "fullscreen": false,
         "height": 400,
+        "center": true,
         "resizable": false,
         "width": 300,
         "url": "splashscreen.html",
-        "label": "splashscreen",
+        "label": "splash",
         "decorations": false
       }
     ]

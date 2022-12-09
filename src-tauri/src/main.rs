@@ -20,7 +20,7 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 async fn close_splashscreen<R: Runtime>(window: tauri::Window<R>) -> bool {
     // close splash screen
-    if let Some(splashscreen) = window.get_window("splashscreen") {
+    if let Some(splashscreen) = window.get_window("splash") {
         splashscreen.close().unwrap();
     }
 
@@ -49,6 +49,11 @@ fn main() {
                 window.open_devtools();
                 window.close_devtools();
             }
+
+            app.listen_global("tauri://update-available".to_string(), move |msg| {
+                println!("New version available!");
+            });
+
             Ok(())
         })
         .system_tray(tray)
@@ -86,12 +91,17 @@ fn main() {
                 }
 
                 "hide" => {
-                    let window = app.get_window("cardinal").unwrap();
+                    let window = app.get_window("main").unwrap();
                     window.hide().unwrap();
                 }
 
                 "update" => {
                     println!("System tray update app pls");
+
+                    let window = app.get_window("main").unwrap();
+                    // Send a empty string because None cannot be accepted
+                    window.emit("tauri://update", "").unwrap();
+
                 }
 
                 _ => {}
