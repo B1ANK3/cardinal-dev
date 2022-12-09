@@ -1,13 +1,16 @@
 {
   "name": "@cardinal/desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "major": "yarn version --major && ./src",
+    "minor": "",
+    "patch": "yarn version --patch && cd ./src-tauri && cargo bump patch"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
