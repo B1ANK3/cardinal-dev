@@ -6,9 +6,7 @@ on:
       - "v*"
   workflow_dispatch:
 
-
 jobs:
-
   create-release:
     name: Create Release
     runs-on: ubuntu-20.04
@@ -21,14 +19,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           node-version: 16
-      
+
       - name: get version
         run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-      
+
       - name: create release
         id: create-release
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           script: |
             let tag_name = `cardinal-v${process.env.PACKAGE_VERSION}`;
             let release_name = `Cardinal v${process.env.PACKAGE_VERSION}`;
@@ -113,7 +112,7 @@ jobs:
           # tag_name: ${{ needs.build.outputs.tagName }}
           # release_name: ${{ needs.build.outputs.releaseName }}
         with:
-          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }} 
+          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           # https://octokit.github.io/rest.js/v19#repos-update-release
           script: |
             github.rest.repos.updateRelease({
