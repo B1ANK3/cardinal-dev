@@ -48,6 +48,8 @@ jobs:
     name: Build Tauri Applications
     needs: [create-release]
     if: ${{ needs.create-release.result == 'success' }}
+    outputs: 
+      release_id: ${{ needs.create-release.outputs.release_id }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,14 +93,14 @@ jobs:
     steps:
       - name: check release id
         env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
+          release_id: ${{ needs.build.outputs.release_id }}
         run: echo $release_id
 
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
         env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
+          release_id: ${{ needs.build.outputs.release_id }}
         with:
           github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           # https://octokit.github.io/rest.js/v19#repos-update-release
