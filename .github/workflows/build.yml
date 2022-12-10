@@ -118,7 +118,7 @@ jobs:
           script: |
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
-              repo: "cardinal-releases"
+              repo: "cardinal-releases",
               release_id: process.env.release_id,
               draft: false,
               prerelease: false
