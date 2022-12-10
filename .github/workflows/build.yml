@@ -6,6 +6,12 @@ on:
       - "v*"
   workflow_dispatch:
 
+# We set the environment variable of the repo to push here
+# because the tauri build uses `context` internally and does not have an
+# input for the repo to write to.
+env: 
+  GITHUB_REPOSITORY: "B1ANK3/cardinal-releases"
+
 jobs:
   create-release:
     name: Create Release
@@ -32,7 +38,7 @@ jobs:
 
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
-              repo: "cardinal-releases",
+              repo: context.repo.repo,
               tag_name,
               name: release_name,
               body: 'Take a look at the assets to download and install this app.',
@@ -74,10 +80,11 @@ jobs:
       - uses: tauri-apps/tauri-action@dev
         id: tauri-build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
+          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
           # script: |
           #   return {
@@ -96,7 +103,7 @@ jobs:
     if: ${{ needs.create-release.result == 'success' && needs.build.result == 'success' }}
 
     steps:
-      - name: check release version
+      - name: check release id
         env:
           release_id: ${{ needs.create-release.outputs.release_id }}
         run: echo $release_id
@@ -114,7 +121,7 @@ jobs:
           script: |
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
-              repo: "cardinal-releases",
+              repo: context.repo.repo,
               release_id: process.env.release_id,
               draft: false,
               prerelease: false
