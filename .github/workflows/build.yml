@@ -101,8 +101,7 @@ jobs:
   release:
     runs-on: ubuntu-20.04
     needs: [create-release, build]
-    if: needs.create-release.result == 'success' &&
-        needs.build.result == 'success'
+    if: ${{ needs.create-release.result == 'success' && needs.build.result == 'success' }}
 
     steps:
       - name: publish release
