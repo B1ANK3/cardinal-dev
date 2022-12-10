@@ -68,7 +68,9 @@ jobs:
       - name: install app dependencies and build it
         run: yarn && yarn build
 
-      - uses: tauri-apps/tauri-action@v0
+        # tauri-apps/tauri-action@v0
+        # use this fork for the latest-version.json file
+      - uses: mantou132/tauri-action@latest-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}

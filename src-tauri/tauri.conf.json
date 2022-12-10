@@ -57,7 +57,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/B1ANK3/cardinal-releases/releases/download/v0.0.1/latest.json"
+        "https://github.com/B1ANK3/cardinal-dev/releases/latest/download/latest-version.json"
       ],
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4QzdFRUUwMjlBRDdEMDIKUldRQ2ZhMHA0TzdIT0UvMkhtQlF6MEhlS0wxaXBLSFBsb2FwYU9WZWJKS2pLejI5OWgxMzhwK2cK",
