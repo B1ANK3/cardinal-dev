@@ -1,7 +1,9 @@
-name: Build
+name: Build Mod
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - "v*"
   workflow_dispatch:
@@ -46,6 +48,8 @@ jobs:
 
   build:
     name: Build Tauri Applications
+    needs: [create-release]
+    if: ${{ needs.create-release.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:
@@ -81,8 +85,8 @@ jobs:
 
   release:
     runs-on: ubuntu-20.04
-    needs: [create-release, build]
-    if: ${{ needs.create-release.result == 'success' && needs.build.result == 'success' }}
+    needs: [build]
+    if: ${{ needs.build.result == 'success' }}
 
     steps:
       - name: check release id
