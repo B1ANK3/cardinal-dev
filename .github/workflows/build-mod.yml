@@ -1,7 +1,7 @@
 name: Build Mod
 
 on:
-  push:
+  # push:
     # disabled Building with this because pushing to external repos is not supported yet
     # tags:
     #   - "v*"
