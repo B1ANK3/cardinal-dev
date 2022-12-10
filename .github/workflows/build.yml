@@ -96,6 +96,11 @@ jobs:
     if: ${{ needs.create-release.result == 'success' && needs.build.result == 'success' }}
 
     steps:
+      - name: check release version
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        run: echo $release_id
+
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
@@ -103,7 +108,6 @@ jobs:
           release_id: ${{ needs.create-release.outputs.release_id }}
           # tag_name: ${{ needs.build.outputs.tagName }}
           # release_name: ${{ needs.build.outputs.releaseName }}
-        run: echo $release_id
         with:
           github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           # https://octokit.github.io/rest.js/v19#repos-update-release
