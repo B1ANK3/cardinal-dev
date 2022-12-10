@@ -1,59 +1,45 @@
-name: Build
+name: Build Local
 
 on:
   push:
-    # Disabled for now until external releases becomes available
-    # tags:
-    #   - "v*"
+    tags:
+      - "v*"
   workflow_dispatch:
-
-# We set the environment variable of the repo to push here
-# because the tauri build uses `context` internally and does not have an
-# input for the repo to write to.
-env: 
-  GITHUB_REPOSITORY: "B1ANK3/cardinal-releases"
 
 jobs:
   create-release:
-    name: Create Release
     runs-on: ubuntu-20.04
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
 
     steps:
       - uses: actions/checkout@v3
+
       - name: setup node
-        uses: actions/checkout@v3
+        uses: actions/setup-node@v3
 
       - name: get version
         run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
+        
       - name: create release
         id: create-release
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           script: |
-            let tag_name = `cardinal-v${process.env.PACKAGE_VERSION}`;
-            let release_name = `Cardinal v${process.env.PACKAGE_VERSION}`;
-
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name,
-              name: release_name,
+              tag_name: `cardinal-v${process.env.PACKAGE_VERSION}`,
+              name: `Cardinal v${process.env.PACKAGE_VERSION}`,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
-              prerelease: false 
+              prerelease: false
             })
 
             return data.id
 
-  build:
-    name: Build Tauri Applications
-    # outputs:
-    #   tagName: ${{ steps.tauri-build.outputs.result.tagName }}
-    #   releaseName: ${{ steps.tauri-build.outputs.result.releaseName }}
+  build-tauri:
+    needs: [create-release]
     strategy:
       fail-fast: false
       matrix:
@@ -62,6 +48,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
+
       - name: setup node
         uses: actions/setup-node@v3
 
@@ -77,48 +64,26 @@ jobs:
       - name: install app dependencies and build it
         run: yarn && yarn build
 
-      # Revisit this branch to when it becomes stable
-      - uses: tauri-apps/tauri-action@dev
-        id: tauri-build
+      - uses: tauri-apps/tauri-action@v0
         env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          # script: |
-          #   return {
-          #     tagName: "cardinal-v__VERSION__",
-          #     releaseName: "Cardinal v__VERSION__",
-          #   }
-          # tagName: cardinal-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          # releaseName: "Cardinal v__VERSION__"
-          # releaseBody: "See the assets to download this version and install."
-          # releaseDraft: true
-          # prerelease: false
 
-  release:
+  publish-release:
     runs-on: ubuntu-20.04
-    needs: [create-release, build]
+    needs: [create-release, build-tauri]
     if: ${{ needs.create-release.result == 'success' && needs.build.result == 'success' }}
 
     steps:
-      - name: check release id
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
-        run: echo $release_id
-
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
         env:
           release_id: ${{ needs.create-release.outputs.release_id }}
-          # tag_name: ${{ needs.build.outputs.tagName }}
-          # release_name: ${{ needs.build.outputs.releaseName }}
         with:
-          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
-          # https://octokit.github.io/rest.js/v19#repos-update-release
           script: |
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
