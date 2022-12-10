@@ -73,11 +73,10 @@ jobs:
       - uses: B1ANK3/tauri-action@dev
         id: tauri-build
         env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TARGET_ACCESS_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          github-token: ${{ secrets.TARGET_ACCESS_TOKEN }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
   release:
