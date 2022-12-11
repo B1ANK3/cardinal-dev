@@ -73,7 +73,7 @@ fn main() {
                 size,
                 ..
             } => {
-                println!("System tray right click recieved");
+                println!("System tray right click received");
             }
 
             SystemTrayEvent::DoubleClick {
