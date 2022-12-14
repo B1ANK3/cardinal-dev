@@ -1,6 +1,6 @@
 <template>
     <div class="group-title">
-        <div class="group-title-label" :class="{ selected: selected }">{{ heading ?? '-' }}</div>
+        <div class="group-title-label">{{ heading ?? '-' }}</div>
     </div>
 </template>
 
@@ -10,9 +10,6 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     props: [
         'heading'
-    ],
-    inject: [
-        'selected'
     ],
     data() {
         return {
