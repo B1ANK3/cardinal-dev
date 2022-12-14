@@ -13,41 +13,44 @@
                         <div class="scrollable-list">
                             <div class="list-rows">
 
-                                <div class="list-row">
-
-                                    <div class="list-row-item">
-                                        <div class="list-row-arrow">
-                                            <div class="row-arrow"></div>
+                                <!-- Don't need to move this to its own  component as its all the same -->
+                                <template v-for="headings in settings">
+                                    <div class="list-row">
+                                        <div class="list-row-item" @click="toggleSubheading($event)">
+                                            <div class="list-row-arrow">
+                                                <div class="row-arrow"></div>
+                                            </div>
+                                            <div class="list-row-content">
+                                                <div class="entry">{{ headings.title }}</div>
+                                            </div>
                                         </div>
-                                        <div class="list-row-content">
-                                            <div class="entry">Entry 1</div>
+                                        <div class="list-items">
+
+                                            <template v-for="sub in headings.subSettings">
+                                                <div class="list-content-container">
+                                                    <div class="list-row-content">
+                                                        <div class="entry">{{ sub.title }}</div>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <!-- <div class="list-content-container">
+                                                <div class="list-row-content">
+                                                    <div class="entry">Entry 2</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="list-content-container">
+                                                <div class="list-row-content">
+                                                    <div class="entry">Entry 2</div>
+                                                </div>
+                                            </div> -->
                                         </div>
                                     </div>
+                                </template>
 
-                                    <div class="list-items hide">
-                                        <div class="list-row-content">
-                                            <div class="entry">Sub heading</div>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="list-row">
-
-                                    <div class="list-row-item">
-                                        <div class="list-row-arrow">
-                                            <div class="row-arrow"></div>
-                                        </div>
-                                        <div class="list-row-content">
-                                            <div class="entry">Entry 2</div>
-                                        </div>
-                                    </div>
-
-                                </div>
 
                             </div>
-
-
 
                         </div>
                     </div>
@@ -84,36 +87,6 @@
                                     </template>
                                 </template>
 
-
-                                <!-- <RowItem>
-                                    <GroupLabel heading="Commonly Used" />
-                                </RowItem> -->
-
-                                <!-- <div class="row-item">
-                                    <div class="row">
-                                        <GroupLabel heading="Commonly Used" />
-                                        <div class="group-title">
-                                            <div class="group-title-label">Commonly Used</div>
-                                        </div> 
-                                    </div>
-                                </div> -->
-
-                                <!-- <RowItem selected="1">
-                                    <GroupLabel heading="Testing Both" />
-                                </RowItem>
-
-                                <RowItem>
-                                    <SettingItem />
-                                </RowItem> -->
-
-                                <!-- <div class="row-item">
-                                    <div class="row">
-                                        <div class="group-title">
-                                            <div class="group-title-label">Commonly Used</div>
-                                        </div>
-                                    </div>
-                                </div> -->
-
                             </div>
                         </div>
                     </div>
@@ -140,11 +113,20 @@ export default defineComponent({
         SettingItem
     },
     data() {
+
+        function toggleSubheading(event: MouseEvent) {
+            var target = (event.target as HTMLDivElement).parentElement
+            target?.classList.toggle('open')
+        }
+
         return {
             settings,
+            toggleSubheading
         }
     },
     mounted() {
+
+
 
         // This is cool and all but why is there no vue property for this?
         // gonna use a media query 
@@ -175,10 +157,6 @@ export default defineComponent({
 
     height: 100%;
     width: 100%;
-}
-
-.hide {
-    display: none!important;
 }
 
 .settings-editor {
@@ -266,17 +244,27 @@ export default defineComponent({
 
                     display: block;
 
+                    pointer-events: none;
+
                     .list-row-item {
+
+                        pointer-events: all;
 
                         display: flex;
                         height: 100%;
                         align-items: center;
                         position: relative;
 
+                        &:hover {
+                            // TODO COLOURSSS
+                            background-color: darken(#fff, 10%);
+                        }
 
                         .list-row-arrow {
                             padding-left: 8px;
                             padding-right: 6px;
+
+                            pointer-events: none;
 
                             flex-shrink: 0;
                             // width: 16px;
@@ -290,7 +278,7 @@ export default defineComponent({
                             .row-arrow {
 
                                 // TODO arrows turning animation
-                                animation: arrow_turn 0.3s normal;
+                                // animation: 0.3s normal;
 
                                 width: 16px;
                                 height: 16px;
@@ -307,17 +295,9 @@ export default defineComponent({
 
                         }
 
-                        @keyframes arrow_turn {
-                            0% {
-                                transform: rotate(0deg);
-                            }
-
-                            100% {
-                                transform: rotate(90deg);
-                            }
-                        }
-
                         .list-row-content {
+
+                            pointer-events: none;
 
                             display: flex;
                             flex: 1;
@@ -335,25 +315,49 @@ export default defineComponent({
 
                     }
 
+                    &:not(.open)>.list-items {
+                        display: none !important;
+                    }
+
+                    &.open .row-arrow {
+                        transform: rotate(90deg);
+                        transition: 0.3s linear;
+                    }
+
                     .list-items {
                         display: flex;
                         flex-direction: column;
                         height: fit-content;
+                        pointer-events: visible;
 
-                        .list-row-content {
+                        .list-content-container {
 
-                            margin-left: 40px;
-                            display: flex;
-                            flex: 1;
-                            overflow: hidden;
+                            width: 100%;
                             height: 100%;
+                            display: block;
+                            overflow: hidden;
+                            flex: 1;
 
-                            .entry {
+                            &:hover {
+                                // TODO Colours
+                                background-color: darken(#fff, 50%);
+                            }
+
+                            .list-row-content {
+
+                                margin-left: 40px;
+                                display: flex;
+                                flex: 1;
                                 overflow: hidden;
-                                text-overflow: ellipsis;
-                                line-height: 22px;
-                                flex-shrink: 1;
-                                display: block;
+                                height: 100%;
+
+                                .entry {
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    line-height: 22px;
+                                    flex-shrink: 1;
+                                    display: block;
+                                }
                             }
                         }
 
@@ -462,8 +466,6 @@ export default defineComponent({
 
             }
         }
-
-        .setting-item {}
     }
 }
 </style>
