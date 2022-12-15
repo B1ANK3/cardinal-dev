@@ -1,39 +1,7 @@
 <template>
-	<div class="container">
-		<h1>Welcome to Cardinal</h1>
-
-		<!-- <h1>Welcome to Tauri!</h1>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p> -->
-
-		<!-- <Greet /> -->
+	<TopNavBar />
+	<div class="content">
+		<router-view></router-view>
 	</div>
 </template>
 
@@ -42,9 +10,11 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { defineComponent } from 'vue'
 import { invoke } from '@tauri-apps/api'
+import TopNavBar from './components/TopNavBar.vue'
 
 export default defineComponent({
 	components: {
+		TopNavBar
 	},
 	mounted() {
 		// vue is loaded and mounted onto page.
@@ -56,25 +26,24 @@ export default defineComponent({
 			console.log('Splash Screen close not invoke or an error has occurred')
 		})
 
-		
+
 	}
 })
 </script>
 
 <style lang="scss" scoped>
-.container {
 
+.content {
 	width: 100%;
-	height: 100%;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+	// height: 100%;
 
-	h1 {
-		font-size: xx-large;
-		text-align: center;
-	}
+	flex-grow: 1;
+
+	// background-color: #121212;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
+
 </style>

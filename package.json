@@ -16,7 +16,8 @@
     "@tauri-apps/api": "^1.1.0",
     "sass": "^1.56.1",
     "tauri-settings": "^0.3.0",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@iarna/toml": "^2.2.5",

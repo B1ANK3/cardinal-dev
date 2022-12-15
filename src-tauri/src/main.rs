@@ -20,9 +20,13 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 async fn close_splashscreen<R: Runtime>(window: tauri::Window<R>) -> bool {
     // close splash screen
-    if let Some(splashscreen) = window.get_window("splash") {
-        splashscreen.close().unwrap();
-    }
+    // if let Some(splashscreen) = window.get_window("splash") {
+    //     splashscreen.close().unwrap();
+    // }
+
+    // Sometimes on windows, the splash screen does not close
+    let splash = window.get_window("splash").unwrap();
+    splash.close().unwrap();
 
     window.get_window("main").unwrap().show().unwrap();
     true
@@ -40,9 +44,10 @@ fn main() {
     let traymenu = SystemTrayMenu::new()
         .add_item(quit)
         .add_native_item(tauri::SystemTrayMenuItem::Separator)
-        .add_item(hide)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(update);
+        .add_item(hide);
+        // Update is done by the program and is hard to control via rust rn which is preferred
+        // .add_native_item(SystemTrayMenuItem::Separator)
+        // .add_item(update);
 
     let tray = SystemTray::new().with_menu(traymenu);
 
