@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { set, get } from '../../settings'
 
 export interface IOption {
     name: string
@@ -23,8 +24,6 @@ export default defineComponent({
         let input = document.querySelector('input.input') as HTMLInputElement
 
         input.value = this.value || this.def || ''
-
-        console.log()
     },
     data() {
         return {

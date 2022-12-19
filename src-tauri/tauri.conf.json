@@ -14,7 +14,7 @@
     "allowlist": {
       "all": true,
       "fs": {
-        "all": false,
+        "all": true,
         "copyFile": false,
         "createDir": true,
         "exists": false,

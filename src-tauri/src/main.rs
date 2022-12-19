@@ -9,7 +9,6 @@ use tauri::Runtime;
 use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::SystemTrayMenu;
-use tauri::SystemTrayMenuItem;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]

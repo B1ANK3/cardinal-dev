@@ -4,8 +4,8 @@
 
             <div class="title">
                 <div class="title-container">
-                    <span class="category">{{ setting?.title.category || '' }}</span>
-                    <span class="label">{{ setting?.title.label }}</span>
+                    <span class="category">{{ setting?.name.category || '' }}</span>
+                    <span class="label">{{ setting?.name.label }}</span>
                 </div>
             </div>
 

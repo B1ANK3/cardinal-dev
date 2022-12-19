@@ -26,10 +26,10 @@
                                         </div>
                                         <div class="list-items">
 
-                                            <template v-for="sub in headings.subSettings">
+                                            <template v-for="sub in headings.properties">
                                                 <div class="list-content-container">
                                                     <div class="list-row-content">
-                                                        <div class="entry">{{ sub.title }}</div>
+                                                        <div class="entry">{{ sub.name.label }}</div>
                                                     </div>
                                                 </div>
                                             </template>
@@ -56,15 +56,15 @@
                                         <GroupLabel :heading="headings.title" />
                                     </RowItem>
 
-                                    <template v-for="setting in headings.settings">
+                                    <template v-for="setting in headings.properties">
                                         <RowItem>
                                             <SettingItem :type="setting.type" :setting="setting" />
                                         </RowItem>
                                     </template>
 
-                                    <template v-for="subsection in headings.subSettings">
+                                    <!-- <template v-for="subsection in headings.properties">
                                         <RowItem>
-                                            <!-- TODO here we need to separate the settings from subheadings -->
+                                            TODO here we need to separate the settings from subheadings
                                             <GroupLabel :heading="subsection.title" />
                                         </RowItem>
 
@@ -73,7 +73,7 @@
                                                 <SettingItem :type="setting.type" :setting="setting" />
                                             </RowItem>
                                         </template>
-                                    </template>
+                                    </template> -->
                                 </template>
 
                                 <template v-else>
@@ -100,7 +100,7 @@ import RowItem from '@/components/Setting.RowItem.vue'
 import SettingItem from '@/components/Setting.SettingItem.vue'
 
 // import settings from '../settings'
-import settings, { get, SettingSimplified, getAll } from '../settings'
+import settings, { get, getAll } from '../settings'
 // import { getAll } from 'tauri-settings';
 
 // const settings = (await getAll())?.settings
@@ -117,8 +117,6 @@ export default defineComponent({
             var target = (event.target as HTMLDivElement).parentElement
             target?.classList.toggle('open')
         }
-
-        console.log(settings)
 
         return {
             settings,
