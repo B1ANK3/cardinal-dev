@@ -10,14 +10,6 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    props: [
-        'selected'
-    ],
-    provide () {
-        return {
-            selected: this.selected
-        }
-    }
 })
 </script>
 

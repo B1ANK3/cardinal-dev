@@ -1,7 +1,7 @@
 <template>
     <div class="select-container">
         <select title="Test Value" class="select-box">
-            <template v-for="{ name, value } in options">
+            <template v-for="{ name, value } in defopt">
                 <option :value="value">{{ name }}</option>
             </template>
         </select>
@@ -9,16 +9,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
+// Same typings from settings.ts for dropdowns
 export interface IOption {
-    name: string
-    value: string
+    name: string | number | boolean
+    value: string | number | boolean
+    description?: string
 }
 
 export default defineComponent({
     props: {
-        options: Array<IOption>
+        value: Array<IOption | string>,
+        def: Object as PropType<String | Boolean | Number | IOption>
+    },
+    data() {
+
+        // Default the options if teh dropbox is only a string array
+        let defopt: IOption[] = this.value?.map(v => {
+            if (typeof v == 'string') {
+                return {
+                    name: v,
+                    value: v
+                }
+            }
+            return {
+                name: v.name,
+                value: v.value,
+                description: v.description
+            }
+        }) || []
+
+        return {
+            defopt
+        }
     }
 })
 </script>

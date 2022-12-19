@@ -34,17 +34,6 @@
                                                 </div>
                                             </template>
 
-                                            <!-- <div class="list-content-container">
-                                                <div class="list-row-content">
-                                                    <div class="entry">Entry 2</div>
-                                                </div>
-                                            </div>
-
-                                            <div class="list-content-container">
-                                                <div class="list-row-content">
-                                                    <div class="entry">Entry 2</div>
-                                                </div>
-                                            </div> -->
                                         </div>
                                     </div>
                                 </template>
@@ -62,14 +51,14 @@
                         <div class="scrollable">
                             <div class="rows">
 
-                                <template v-for="headings in settings">
+                                <template v-for="headings in settings" v-if="settings != undefined">
                                     <RowItem>
                                         <GroupLabel :heading="headings.title" />
                                     </RowItem>
 
                                     <template v-for="setting in headings.settings">
                                         <RowItem>
-                                            <SettingItem :setting="setting" />
+                                            <SettingItem :type="setting.type" :setting="setting" />
                                         </RowItem>
                                     </template>
 
@@ -81,10 +70,16 @@
 
                                         <template v-for="setting in subsection.settings">
                                             <RowItem>
-                                                <SettingItem :setting="setting" />
+                                                <SettingItem :type="setting.type" :setting="setting" />
                                             </RowItem>
                                         </template>
                                     </template>
+                                </template>
+
+                                <template v-else>
+                                    <div class="ntauri">
+                                        Not running in Tauri environment
+                                    </div>
                                 </template>
 
                             </div>
@@ -104,7 +99,11 @@ import GroupLabel from '@/components/Setting.GroupTitle.vue'
 import RowItem from '@/components/Setting.RowItem.vue'
 import SettingItem from '@/components/Setting.SettingItem.vue'
 
-import settings from '../settings'
+// import settings from '../settings'
+import settings, { get, SettingSimplified, getAll } from '../settings'
+// import { getAll } from 'tauri-settings';
+
+// const settings = (await getAll())?.settings
 
 export default defineComponent({
     components: {
@@ -118,6 +117,8 @@ export default defineComponent({
             var target = (event.target as HTMLDivElement).parentElement
             target?.classList.toggle('open')
         }
+
+        console.log(settings)
 
         return {
             settings,
@@ -414,6 +415,18 @@ export default defineComponent({
                 width: 100%;
                 overflow-y: auto;
                 display: block;
+
+                .ntauri {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    font-size: xx-large;
+
+                    height: 100%;
+                    width: 100%;
+                }
+
             }
 
         }

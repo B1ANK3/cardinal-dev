@@ -9,9 +9,10 @@ interface BasicSetting {
     }
     description?: string
     type: 'dropdown' | 'string' | 'number' | 'checkbox' | 'list' /* | 'heading'  */ | 'link' /* | 'none' */
+    deprecated: boolean
     value: {
-        name: string
-        value: string
+        name: string | number | boolean
+        value: string | number | boolean
         description?: string
     }[] | string | number | boolean | string[]
     default?: string | number | boolean | {
@@ -27,15 +28,15 @@ interface BasicSetting {
 interface DropdownSetting extends BasicSetting {
     type: 'dropdown'
     value: {
-        name: string
-        value: string
+        name: string | number | boolean
+        value: string | number | boolean
         description?: string
-    }[]
+    }[] | string[]
     default?: {
         name: string
         value: string
         description?: string
-    }
+    } | string
 }
 
 /**
@@ -49,11 +50,12 @@ function defineDropdownSetting(options: {
         category?: string
     }
     description?: string
+    deprecated: boolean
     value: {
         name: string
         value: string
         description?: string
-    }[]
+    }[] | string[]
     default?: string | number
 }): DropdownSetting {
 
@@ -61,12 +63,16 @@ function defineDropdownSetting(options: {
         name: string
         value: string
         description?: string
-    } | undefined
+    } | string | undefined
 
     // get the default value according to name
     if (typeof (options.default) == 'string') {
         def = options.value.map(v => {
-            if (v.name == options.default) return v
+            if (typeof v == 'string') {
+                if (v == options.default) return v
+            } else {
+                if (v.name == options.default) return v
+            }
         })[0]
     }
 
@@ -78,6 +84,7 @@ function defineDropdownSetting(options: {
     return {
         title: options.title,
         description: options.description,
+        deprecated: options.deprecated,
         type: 'dropdown',
         value: options.value,
         default: def
@@ -102,6 +109,7 @@ function defineStringSetting(options: {
         label: string
         category?: string
     }
+    deprecated: boolean
     description?: string
     value: string
     default?: string
@@ -109,6 +117,7 @@ function defineStringSetting(options: {
     return {
         title: options.title,
         description: options.description,
+        deprecated: options.deprecated,
         type: "string",
         value: options.value,
         default: options.default || ''
@@ -134,6 +143,7 @@ function defineBooleanSetting(options: {
         label: string
         category?: string
     }
+    deprecated: boolean
     description?: string
     value: boolean
     default?: boolean
@@ -142,6 +152,7 @@ function defineBooleanSetting(options: {
         title: options.title,
         description: options.description,
         type: "checkbox",
+        deprecated: options.deprecated,
         value: options.value,
         default: options.default || false
     }
@@ -166,6 +177,7 @@ function defineNumberSetting(options: {
         label: string
         category?: string
     }
+    deprecated: boolean
     description?: string
     value: number,
     default?: number
@@ -173,6 +185,7 @@ function defineNumberSetting(options: {
     return {
         title: options.title,
         description: options.description,
+        deprecated: options.deprecated,
         type: 'number',
         value: options.value,
         default: options.default || 0
@@ -227,27 +240,6 @@ export interface SettingSimplified {
     }
 }
 
-const s = [
-    {
-        title: 'foo bar',
-        sub: [
-            {
-                title: 'hello world',
-                settings: {
-                    'application.foo': {},
-                    'application.bar': {}
-                }
-            }
-        ],
-        settings: {
-            'application.setting': {
-
-            }
-        }
-
-    }
-]
-
 // TODO: Use this function to add extra metadata for api
 /**
  * Remaps the Settings object into a simplified object for easy parsing on frontend. This is dumb and I want to fix this
@@ -292,7 +284,7 @@ function defineSettings(settings: Settings[]): SettingSimplified[] {
 }
 
 //! This will have to move to rust when the api has been created
-export default defineSettings([
+const defaults = defineSettings([
     {
         title: 'Application',
         properties: {
@@ -305,7 +297,17 @@ export default defineSettings([
                             title: {
                                 label: 'Font Size'
                             },
+                            deprecated: false,
                             value: 42
+                        }),
+                        'font.family': defineStringSetting({
+                            title: {
+                                label: 'Font Family'
+                            },
+                            description: 'Font family of application',
+                            deprecated: false,
+                            value: 'Oxygen',
+                            default: 'Oxygen'
                         })
                     }
                 }
@@ -316,6 +318,7 @@ export default defineSettings([
                     label: 'Theme'
                 },
                 description: 'Set the application theme',
+                deprecated: false,
                 value: [
                     {
                         name: 'Dark Theme',
@@ -329,11 +332,50 @@ export default defineSettings([
                     }
                 ],
                 default: 0
+            }),
+
+            'application.active': defineBooleanSetting({
+                title: {
+                    label: 'Active'
+                },
+                deprecated: false,
+                value: true,
+                default: true,
+                description: 'Auto starts client on game launch'
             })
         }
-    },
-    {
-        title: 'hi',
-        properties: {}
     }
 ])
+
+import { checkTauri } from './util'
+import { get as tget, set as tset, getAll as tgetAll } from 'tauri-settings'
+
+export default checkTauri() ? (await getAll())?.settings : defaults
+
+const t = Object.assign((await getAll())?.settings || {}, defaults)
+
+console.log(t)
+
+type SettingScheme = SettingSimplified
+
+export async function get(key: keyof SettingScheme) {
+    if (!checkTauri()) return
+    return tget<SettingScheme>(key, { prettify: true })
+}
+
+export async function set(key: keyof SettingScheme, value: string | SettingTypes | {
+    title: string;
+    settings: {
+        [key: string]: SettingTypes;
+    };
+}[] | {
+    [key: string]: SettingTypes;
+}) {
+    if (!checkTauri()) return
+    return tset<SettingScheme>(key, value, { prettify: true })
+}
+
+export async function getAll() {
+    if (!checkTauri()) return
+    return tgetAll<SettingSimplified[]>()
+}

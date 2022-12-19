@@ -1,6 +1,6 @@
 <template>
     <div class="setting-item">
-        <div class="contents" :class="{ selected: selected }">
+        <div class="contents">
 
             <div class="title">
                 <div class="title-container">
@@ -9,35 +9,35 @@
                 </div>
             </div>
 
-            <div class="description">
+            <div class="description" v-if="type != 'checkbox'">
                 <div class="markdown">
                     {{ setting?.description }}
-                    <!-- <p>Hello, this is a description</p> -->
+                </div>
+            </div>
+
+            <div class="description-bool" v-else>
+                <div class="bool-control">
+                    <div class="checkbox" @click="toggle_checkbox($event)"></div>
+                </div>
+                <div class="description">
+                    <div class="markdown">
+                        {{ setting?.description }}
+                    </div>
                 </div>
             </div>
 
             <!-- TODO: Modded indicator is based on default values -->
-            <div class="modifier-indicator"></div>
+            <div class="modifier-indicator" :class="setting?.default != setting?.value ? 'hide' : ''"></div>
 
-            <div class="value">
+            <div class="value" v-if="type != 'checkbox'">
                 <!-- TODO: Setting Types -->
-                <Dropdown :options="opt" />
+                <Dropdown v-if="type == 'dropdown'" :value="setting?.value" :def="setting?.default" />
+                <StringValue v-else-if="type == 'string'" :value="setting?.value" :def="setting?.default" />
+                <!-- <Checkbox v-if="type == 'checkbox'" :value="setting?.value" :def="setting?.default" /> -->
+                <Number v-else-if="type == 'number'" :value="setting?.value" :def="setting?.default" />
             </div>
 
-            <!-- <div class="value">
-
-                <div class="select-container">
-                    <select title="Test Value" class="select-box">
-                        <option value="op1">Option 1</option>
-                        <option value="op2">Option 2</option>
-                        <option value="op3">Option 3</option>
-                    </select>
-                </div>
-            </div> -->
-
-
-
-            <div class="deprecated-msg">
+            <div class="deprecated-msg" :class="setting?.deprecated ? '' : 'hide'">
                 <div class="error">Setting is deprecated</div>
             </div>
 
@@ -65,29 +65,34 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import Dropdown from '@/components/setting-values/Setting.Dropdown.vue'
 import { IOption } from './setting-values/Setting.Dropdown.vue'
-import { SettingTypes } from '../settings'
+import settings, { SettingTypes } from '../settings'
 
-const opt: IOption[] = [
-    { name: 'Option', value: "Option 1" },
-    { name: 'another option', value: 'wow' }
-]
+import Dropdown from '@/components/setting-values/Setting.Dropdown.vue'
+import StringValue from '@/components/setting-values/Setting.String.vue'
+// import Checkbox from '@/components/setting-values/Setting.Checkbox.vue'
+import Number from '@/components/setting-values/Setting.Number.vue'
+import { set } from 'tauri-settings'
 
 export default defineComponent({
     props: {
         setting: Object as PropType<SettingTypes>,
-        selected: Boolean
+        type: String as PropType<'string' | 'number' | 'checkbox' | 'dropdown'>
     },
     components: {
-        Dropdown
+        Dropdown,
+        StringValue,
+        // Checkbox,
+        Number
     },
     data() {
 
         // TODO add catch here if passed settings are not of type SettingType
 
         return {
-            opt,
+            toggle_checkbox(event: MouseEvent) {
+                (event.target as HTMLDivElement).classList.toggle('checked')
+            }
         }
     }
 })
@@ -116,6 +121,10 @@ export default defineComponent({
         white-space: normal;
         display: block;
         outline-offset: -1px;
+
+        &:hover {
+            background-color: darken(#fff, 25%);
+        }
 
 
         .title {
@@ -170,6 +179,52 @@ export default defineComponent({
             }
         }
 
+        .description-bool {
+            margin-top: -1px;
+            user-select: text;
+            -webkit-user-select: text;
+
+            display: flex;
+            cursor: pointer;
+
+            .bool-control {
+
+                display: flex;
+                align-items: center;
+
+                .checkbox {
+                    height: 18px;
+                    width: 18px;
+                    border: 1px solid #999;
+                    border-radius: 3px;
+                    margin-right: 9px;
+                    margin-left: 0;
+                    padding: 0;
+
+                    &::before {
+
+                        background: url('@/assets/check.svg') no-repeat center center;
+                        background-size: contain;
+                        width: 100%;
+                        height: 100%;
+
+                        content: " ";
+                        opacity: 1;
+                        color: inherit !important;
+
+                        display: flex;
+                        transition: opacity 0.3s;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    &:not(.checked)::before {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+
         .modifier-indicator {
             display: block;
             content: " ";
@@ -181,6 +236,10 @@ export default defineComponent({
             left: 5px;
             top: 15px;
             bottom: 18px;
+
+            &.hide {
+                display: none;
+            }
         }
 
         .value {
@@ -246,7 +305,11 @@ export default defineComponent({
             -webkit-user-select: text;
 
             // Changes dynamically
-            display: none;
+            // display: none;
+
+            &.hide {
+                display: none !important;
+            }
 
             .error {
                 color: inherit !important;
@@ -254,7 +317,7 @@ export default defineComponent({
 
                 text-decoration: none;
                 text-rendering: auto;
-                text-align: center;
+                text-align: left;
                 text-transform: none;
             }
         }
