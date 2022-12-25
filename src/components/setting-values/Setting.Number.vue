@@ -1,13 +1,14 @@
 <template>
     <div class="number-input">
         <div class="input-wrapper">
-            <input type="number" class="input">
+            <input type="number" class="input" :value="defopt" @input="valChange($event)">
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { set } from '../../settings'
 
 export interface IOption {
     name: string
@@ -17,13 +18,35 @@ export interface IOption {
 export default defineComponent({
     props: {
         value: Number,
-        def: Number
+        def: {
+            type: Number,
+            required: true
+        },
+        propname: {
+            type: String,
+            required: true
+        }
     },
     mounted() {
         // TODO turn into computed values
-        let input = document.querySelector('input.input') as HTMLInputElement
+        // let input = document.querySelector('input.input') as HTMLInputElement
 
-        input.valueAsNumber = this.value || this.def || 0
+        // input.valueAsNumber = this.value || this.def || 0
+    },
+    data() {
+
+        let defopt: number = this.value || this.def || 0
+        let pname = this.propname
+
+        console.log(defopt)
+
+        return {
+            defopt,
+            valChange(payload: Event) {
+                console.log((payload.target as HTMLInputElement).value)
+                set(pname, (payload.target as HTMLInputElement).valueAsNumber)
+            }
+        }
     }
 })
 </script>

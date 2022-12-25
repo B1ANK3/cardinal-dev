@@ -10,14 +10,21 @@ interface BasicSetting {
     description?: string
     type: 'dropdown' | 'string' | 'number' | 'checkbox' | 'list' /* | 'heading'  */ | 'link' /* | 'none' */
     deprecated: boolean
+    // The value should not be set here but rather default should be set for new settings
+    // Value is by default the default value, the program will set the value 
     value: {
-        name: string | number | boolean
+        name: string 
+        value: string | number | boolean
+        description?: string
+    } | string | number | boolean 
+    options?: {
+        name: string 
         value: string | number | boolean
         description?: string
     }[] | string | number | boolean | string[]
-    default?: string | number | boolean | {
-        name: string
-        value: string
+    default: string | number | boolean | {
+        name: string 
+        value: string | number | boolean
         description?: string
     }
 }
@@ -28,13 +35,18 @@ interface BasicSetting {
 interface DropdownSetting extends BasicSetting {
     type: 'dropdown'
     value: {
-        name: string | number | boolean
+        name: string 
+        value: string | number | boolean
+        description?: string
+    } | string
+    options: {
+        name: string 
         value: string | number | boolean
         description?: string
     }[] | string[]
-    default?: {
+    default: {
         name: string
-        value: string
+        value: string | number | boolean
         description?: string
     } | string
 }
@@ -51,34 +63,45 @@ function defineDropdownSetting(options: {
     }
     description?: string
     deprecated: boolean
-    value: {
+    //! Can't set value in setting
+    // value: {
+    //     name: string
+    //     value: string
+    //     description?: string
+    // } | string
+    options: {
         name: string
         value: string
         description?: string
     }[] | string[]
-    default?: string | number
+    default: string | number
 }): DropdownSetting {
 
     var def: {
         name: string
-        value: string
+        value: string | number | boolean
         description?: string
-    } | string | undefined
+    } | string 
 
     // get the default value according to name
     if (typeof (options.default) == 'string') {
-        def = options.value.map(v => {
+        def = options.options.map(v => {
             if (typeof v == 'string') {
                 if (v == options.default) return v
             } else {
                 if (v.name == options.default) return v
             }
-        })[0]
+        })[0] || options.options[0] //? If the string does not match, make the 0th index the default
     }
 
     // get value according to index
     if (typeof (options.default) == 'number') {
-        def = options.value[options.default]
+        def = options.options[options.default]
+    }
+
+    // there are no object in the options 
+    if (Object.keys(options.options).length <= 0) {
+        def = '' //? Make it an empty string
     }
 
     return {
@@ -86,8 +109,9 @@ function defineDropdownSetting(options: {
         description: options.description,
         deprecated: options.deprecated,
         type: 'dropdown',
-        value: options.value,
-        default: def
+        options: options.options,
+        value: def!,
+        default: def!
     }
 }
 /**
@@ -111,16 +135,16 @@ function defineStringSetting(options: {
     }
     deprecated: boolean
     description?: string
-    value: string
-    default?: string
+    // value: string
+    default: string
 }): StringSetting {
     return {
         name: options.title,
         description: options.description,
         deprecated: options.deprecated,
         type: "string",
-        value: options.value,
-        default: options.default || ''
+        value: options.default,
+        default: options.default 
     }
 }
 
@@ -130,7 +154,7 @@ function defineStringSetting(options: {
 interface BooleanSetting extends BasicSetting {
     type: 'checkbox'
     value: boolean
-    default?: boolean
+    default: boolean
 }
 
 /**
@@ -145,16 +169,16 @@ function defineBooleanSetting(options: {
     }
     deprecated: boolean
     description?: string
-    value: boolean
-    default?: boolean
+    // value: boolean
+    default: boolean
 }): BooleanSetting {
     return {
         name: options.title,
         description: options.description,
         type: "checkbox",
         deprecated: options.deprecated,
-        value: options.value,
-        default: options.default || false
+        value: options.default,
+        default: options.default
     }
 }
 
@@ -164,7 +188,7 @@ function defineBooleanSetting(options: {
 interface NumberSetting extends BasicSetting {
     type: 'number'
     value: number
-    default?: number
+    default: number
 }
 
 /**
@@ -179,22 +203,22 @@ function defineNumberSetting(options: {
     }
     deprecated: boolean
     description?: string
-    value: number,
-    default?: number
+    // value: number,
+    default: number
 }): NumberSetting {
     return {
         name: options.title,
         description: options.description,
         deprecated: options.deprecated,
         type: 'number',
-        value: options.value,
-        default: options.default || 0
+        value: options.default,
+        default: options.default
     }
 }
 
 interface ListSetting extends BasicSetting {
     type: 'list'
-    value: string[]
+    options: string[]
 }
 
 // Headings should be automatic 
@@ -314,7 +338,7 @@ const defaults = defineSettings({
                 },
                 description: 'Set the application theme',
                 deprecated: false,
-                value: [
+                options: [
                     {
                         name: 'Dark Theme',
                         value: 'dark',
@@ -334,7 +358,7 @@ const defaults = defineSettings({
                     label: 'Active'
                 },
                 deprecated: false,
-                value: true,
+                // value: true,
                 default: true,
                 description: 'Auto starts client on game launch'
             })
@@ -349,7 +373,8 @@ const defaults = defineSettings({
                     label: 'Size'
                 },
                 deprecated: false,
-                value: 42
+                // value: 42,
+                default: 42
             }),
 
             'font.family': defineStringSetting({
@@ -358,12 +383,38 @@ const defaults = defineSettings({
                 },
                 description: 'Font family of application',
                 deprecated: false,
-                value: 'Oxygen',
+                // value: 'Oxygen',
                 default: 'Oxygen'
             }),
         }
     }
 })
+
+// Potential composition API
+// const compSettings:{
+//     [key: string]: {
+//         title: string
+//         properties: {
+//             test => any
+//         }
+//     }
+// } = {
+//     'application': {
+//         title: 'Application',
+//         properties: {
+//             test('font.size', {
+
+//             }),
+//             test('font.language', {
+
+//             })
+//         }
+//     }
+// }
+
+// function test(key: string, options: {}): any {
+//     return
+// }
 
 import { checkTauri } from './util'
 import { SettingsManager } from 'settings-manager'
@@ -409,6 +460,8 @@ export async function get(key: string) {
 export async function set(key: string, value: any) {
     if (!checkTauri()) return
 
+    // debugger
+
     const [head, _] = key.split('.')
     const clone = settingManager.getAll()
 
@@ -417,6 +470,7 @@ export async function set(key: string, value: any) {
     // can accept 2 types of key: eg. 'fonts.size' or 'size'
     if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
 
+    console.log(`Setting ${key} changing from ${clone[head].properties[key].value} to ${value}`)
     clone[head].properties[key].value = value
 
     // no need to save settings because of a proxy that handles autosaving

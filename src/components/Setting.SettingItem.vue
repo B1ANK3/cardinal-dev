@@ -31,10 +31,13 @@
 
             <div class="value" v-if="type != 'checkbox'">
                 <!-- TODO: Setting Types -->
-                <Dropdown v-if="type == 'dropdown'" :value="setting?.value" :def="setting?.default" />
-                <StringValue v-else-if="type == 'string'" :value="setting?.value" :def="setting?.default" />
+                <Dropdown v-if="type == 'dropdown'" :options="setting?.options" :def="setting?.default"
+                    :propname="propname" />
+                <StringValue v-else-if="type == 'string'" :value="setting?.value" :def="setting?.default"
+                    :propname="propname" />
                 <!-- <Checkbox v-if="type == 'checkbox'" :value="setting?.value" :def="setting?.default" /> -->
-                <Number v-else-if="type == 'number'" :value="setting?.value" :def="setting?.default" />
+                <Number v-else-if="type == 'number'" :value="setting?.value" :def="setting?.default"
+                    :propname="propname" />
             </div>
 
             <div class="deprecated-msg" :class="setting?.deprecated ? '' : 'hide'">
@@ -65,19 +68,22 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { IOption } from './setting-values/Setting.Dropdown.vue'
-import settings, { SettingTypes } from '../settings'
+import { SettingTypes } from '../settings'
 
 import Dropdown from '@/components/setting-values/Setting.Dropdown.vue'
 import StringValue from '@/components/setting-values/Setting.String.vue'
 // import Checkbox from '@/components/setting-values/Setting.Checkbox.vue'
 import Number from '@/components/setting-values/Setting.Number.vue'
-import { set } from 'tauri-settings'
+import { set } from '../settings'
 
 export default defineComponent({
     props: {
         setting: Object as PropType<SettingTypes>,
-        type: String as PropType<'string' | 'number' | 'checkbox' | 'dropdown'>
+        type: String as PropType<'string' | 'number' | 'checkbox' | 'dropdown'>,
+        propname: {
+            type: String,
+            required: true
+        }
     },
     components: {
         Dropdown,

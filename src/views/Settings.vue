@@ -56,9 +56,9 @@
                                         <GroupLabel :heading="headings.title" />
                                     </RowItem>
 
-                                    <template v-for="setting in headings.properties">
+                                    <template v-for="(setting, propname) in headings.properties">
                                         <RowItem>
-                                            <SettingItem :type="setting.type" :setting="setting" />
+                                            <SettingItem :type="setting.type" :setting="setting" :propname="propname" />
                                         </RowItem>
                                     </template>
 
@@ -100,10 +100,10 @@ import RowItem from '@/components/Setting.RowItem.vue'
 import SettingItem from '@/components/Setting.SettingItem.vue'
 
 // import settings from '../settings'
-import settings, { get, getAll } from '../settings'
+import settings from '../settings'
 // import { getAll } from 'tauri-settings';
 
-// const settings = (await getAll())?.settings
+console.log(settings)
 
 export default defineComponent({
     components: {

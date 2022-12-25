@@ -4,7 +4,7 @@ $dark-grey: #121212;
 
 // declare css global variables to use
 :root {
-    --primary: #fff;
+  --primary: #fff;
 }
 
 // https://stackoverflow.com/questions/53579774/how-to-get-values-of-array-in-scss
@@ -19,12 +19,12 @@ $dark-grey: #121212;
   --secondary: #000;
 }
 
-
+$primary: var(--primary);
+$secondary: var(--secondary);
 
 @function getValue($key) {
   @return map-get($array-map, $key);
 }
-
 
 @mixin dp00($bg) {
   background-color: lighten($bg, 0%);

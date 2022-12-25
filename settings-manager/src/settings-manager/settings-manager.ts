@@ -1,12 +1,14 @@
+import { Console } from 'console';
 import { ConfigOptions } from '../config/config';
 import { STATUS } from '../fs/ensure-settings-file';
 
 import { getSettings, saveSettings } from '../fs/load-settings';
+import mergeDeep from '../utils/deep-merge';
 // import { get, set } from '../settings/getter-setter';
 // import { getDotNotation, setDotNotation } from '../utils/dot-notation';
-import type { Path, PathValue } from '../types/dot-notation';
+// import type { Path, PathValue } from '../types/dot-notation';
 
-export class SettingsManager<SettingsSchema extends {} = any> {
+export default class SettingsManager<SettingsSchema extends {} = any> {
     /**
      * @internal
      */
@@ -37,11 +39,16 @@ export class SettingsManager<SettingsSchema extends {} = any> {
         if (currentSettings.status === STATUS.FILE_CREATED) {
             this.settings = { ...this.default };
             await this.saveSettings();
+            console.log('File created with defaults')
         }
         else if (currentSettings.status === STATUS.FILE_EXISTS) {
             //! This needs to include the defaults and merge the 2 objects
             // Object.assign(this.settings, this.default)
-            this.settings = { ...currentSettings.settings };
+            // this.settings = { ...currentSettings.settings };
+            this.settings = mergeDeep<SettingsSchema>({ ...this.default }, { ...currentSettings.settings })
+            console.log('File exists and defaults were merged', this.settings)
+            // save default settings
+            await this.saveSettings()
         }
 
         let self = this
@@ -52,6 +59,7 @@ export class SettingsManager<SettingsSchema extends {} = any> {
         const handler: ProxyHandler<SettingsSchema> = {
             set(target, prop, value): boolean {
                 // console.log(`Changed: ${prop} from ${target[prop]} to ${value}`)
+                console.log('Setting value from proxy')
                 // TODO: add specific typings for Proxies
                 // @ts-ignore
                 target[prop] = value
@@ -60,19 +68,22 @@ export class SettingsManager<SettingsSchema extends {} = any> {
                 return true
             },
             get(target, key) {
+                console.log('Getting value from proxy')
                 // @ts-ignore
                 if (typeof target[key] === 'object' && target[key] != null) {
-                // @ts-ignore
+                    // @ts-ignore
                     return new Proxy(target[key], handler)
                 }
                 // @ts-ignore
                 return target[key]
             }
-        }      
+        }
 
-        return new Proxy(this.settings, handler)
+        // Add the proxy object to the main settings object
+        console.log(`Adding proxy to settings object`)
+        this.settings = new Proxy(this.settings, handler)
 
-        // return this.settings;
+        return this.settings;
     }
 
     /**

@@ -1,7 +1,7 @@
 <template>
     <div class="string-input">
         <div class="input-wrapper">
-            <input type="text" class="input" @input="valChange">
+            <input type="text" class="input" @input="valChange" :value="defopt">
         </div>
     </div>
 </template>
@@ -18,17 +18,31 @@ export interface IOption {
 export default defineComponent({
     props: {
         value: String,
-        def: String
+        def: {
+            type: String,
+            required: true
+        },
+        propname: {
+            type: String,
+            required: true
+        }
     },
     mounted() {
-        let input = document.querySelector('input.input') as HTMLInputElement
+        // let input = document.querySelector('input.input') as HTMLInputElement
 
-        input.value = this.value || this.def || ''
+        // input.value = this.value || this.def || ''
     },
     data() {
+
+        let defopt: string = this.value || this.def || ''
+        let pname: string = this.propname
+        console.log(defopt)
+
         return {
+            defopt,
             valChange(payload: Event) {
                 console.log((payload.target as HTMLInputElement).value)
+                set(pname, (payload.target as HTMLInputElement).value)
             }
         }
     }

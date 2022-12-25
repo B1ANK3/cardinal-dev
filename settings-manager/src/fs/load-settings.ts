@@ -7,14 +7,15 @@ import { ConfigOptions, parseOptions } from '../config/config';
  */
 export async function saveSettings
   <SettingsSchema extends any>
-  (newSettings: SettingsSchema, path: string, options: ConfigOptions)
-{
+  (newSettings: SettingsSchema, path: string, options: ConfigOptions) {
   try {
     const finalConfig = parseOptions(options);
 
     return await writeFile({
       contents: JSON.stringify(newSettings, null, finalConfig.prettify ? finalConfig.numSpaces : 0),
       path
+    }).catch(e => {
+      console.log('Error writing to file', e)
     })
   }
   catch (e) {
@@ -29,10 +30,11 @@ export async function saveSettings
  */
 export async function getSettings
   <SettingsSchema extends any>
-  (options: ConfigOptions = {}): Promise<{settings: SettingsSchema, path: string, status: STATUS}>
-{
+  (options: ConfigOptions = {}): Promise<{ settings: SettingsSchema, path: string, status: STATUS }> {
   try {
     const settingsFile = await ensureSettingsFile(options);
+
+    console.log('Got settings file: ', settingsFile.path, settingsFile.status)
 
     return {
       settings: JSON.parse(settingsFile.content) as SettingsSchema,

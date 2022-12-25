@@ -1,6 +1,6 @@
 <template>
     <div class="select-container">
-        <select title="Test Value" class="select-box">
+        <select title="Test Value" class="select-box" @input="valChange($event)">
             <template v-for="{ name, value } in defopt">
                 <option :value="value">{{ name }}</option>
             </template>
@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { set } from '../../settings'
 
 // Same typings from settings.ts for dropdowns
 export interface IOption {
@@ -20,13 +21,20 @@ export interface IOption {
 
 export default defineComponent({
     props: {
-        value: Array<IOption | string>,
-        def: Object as PropType<String | Boolean | Number | IOption>
+        options: Array<IOption | string>,
+        def: {
+            type: Object as PropType<String | Boolean | Number | IOption>,
+            required: true
+        },
+        propname: {
+            type: String,
+            required: true
+        }
     },
     data() {
 
         // Default the options if teh dropbox is only a string array
-        let defopt: IOption[] = this.value?.map(v => {
+        let defopt: IOption[] = this.options?.map(v => {
             if (typeof v == 'string') {
                 return {
                     name: v,
@@ -39,9 +47,26 @@ export default defineComponent({
                 description: v.description
             }
         }) || []
+        let pname = this.propname
+
+        console.log(defopt)
 
         return {
-            defopt
+            defopt,
+            valChange(payload: Event) {
+                // console.log((payload.target as HTMLSelectElement).value)
+
+                // TODO: use the index of the options to get the selected value
+
+                let selected = defopt.filter(v => v.value == (payload.target as HTMLSelectElement).value)[0]
+                if (!selected) {
+                    console.log('Unexpected dropdown value does not exist', selected)
+                    return
+                }
+
+                console.log(pname, selected)
+                set(pname, selected)
+            }
         }
     }
 })
