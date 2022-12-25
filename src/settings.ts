@@ -366,24 +366,14 @@ const defaults = defineSettings({
 })
 
 import { checkTauri } from './util'
-import { get as tget, set as tset, getAll as tgetAll, SettingsManager } from 'tauri-settings'
-
-export default checkTauri() ? Object.assign((await getAll())?.settings || {}, defaults) : defaults
-
-type TSettings = {
-    [key: string]: {
-        title: string
-        properties: {
-            [key: string]: SettingTypes
-        }
-    }
-}
+import { SettingsManager } from 'settings-manager'
 
 // regular 'settings.json' file doesn't have a proper getAll so we set the name of the file to write to it
 // in the future i'll have to make a fork or similar project for making settings as this is very finicky and
 // breaks when using settings manager. Also typings is a problem because of the dot-notation.
+//* Fixed this. Made a 'fork' that only uses a getter to get all settings and has a proxy to detect changes in values
 // Not sure how reactive this will be with Vue
-const settingManager = new SettingsManager<TSettings>(defaults, { filename: 'settings2', prettify: true })
+const settingManager = new SettingsManager<Settings>(defaults, { filename: 'settings', prettify: true })
 if (checkTauri())
     settingManager.initialize().then(() => {
         // sync Cache here <- don't need cache rn
@@ -391,6 +381,7 @@ if (checkTauri())
         // settingManager.setCache();
     })
 
+//! No cache in forked version as of v0.0.1
 // Saves current settings to cache ie ram
 // await settingManager.syncCache()
 
@@ -399,7 +390,7 @@ export async function get(key: string) {
     if (!checkTauri()) return
 
     const [head, _] = key.split('.')
-    const clone = await getAll()
+    const clone = settingManager.getAll()
 
     if (!clone) return
     if (!clone[head]) return
@@ -419,7 +410,7 @@ export async function set(key: string, value: any) {
     if (!checkTauri()) return
 
     const [head, _] = key.split('.')
-    const clone = await getAll()
+    const clone = settingManager.getAll()
 
     if (!clone) return
     if (!clone[head]) return
@@ -428,22 +419,12 @@ export async function set(key: string, value: any) {
 
     clone[head].properties[key].value = value
 
+    // no need to save settings because of a proxy that handles autosaving
+
     // Seems janky way to set it?
     // settingManager.settings = clone
 
     // return tset<SettingScheme>(key, clone, { prettify: true })
 }
 
-export async function getAll() {
-    if (!checkTauri()) return
-    // return tgetAll<SettingScheme>()
-    // return settingManager.settings
-
-    return new Promise<TSettings>((resolve, reject) => {
-        tgetAll<TSettings>({ fileName: 'settings2' }).then(t => {
-            console.log(t)
-            resolve(t.settings)
-        }).catch(reject)
-    })
-    // return {} as TSettings
-}
+export default checkTauri() ? Object.assign(settingManager.getAll() || {}, defaults) : defaults

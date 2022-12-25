@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:helper": "cd settings-manager && yarn run build",
     "preview": "vite preview",
     "tauri": "tauri",
     "semver": "node scripts/version.js",
@@ -15,7 +16,7 @@
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
     "sass": "^1.56.1",
-    "tauri-settings": "^0.3.0",
+    "settings-manager": "link:./settings-manager",
     "vue": "^3.2.37",
     "vue-router": "4"
   },

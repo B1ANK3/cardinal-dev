@@ -7,7 +7,23 @@ $dark-grey: #121212;
     --primary: #fff;
 }
 
-$primary: var(--primary);
+// https://stackoverflow.com/questions/53579774/how-to-get-values-of-array-in-scss
+
+.dark {
+  --primary: #000;
+  --secondary: #fff;
+}
+
+.light {
+  --primary: #fff;
+  --secondary: #000;
+}
+
+
+
+@function getValue($key) {
+  @return map-get($array-map, $key);
+}
 
 
 @mixin dp00($bg) {
