@@ -12,21 +12,16 @@ interface BasicSetting {
     deprecated: boolean
     // The value should not be set here but rather default should be set for new settings
     // Value is by default the default value, the program will set the value 
-    value: {
-        name: string 
-        value: string | number | boolean
-        description?: string
-    } | string | number | boolean 
-    options?: {
-        name: string 
-        value: string | number | boolean
-        description?: string
-    }[] | string | number | boolean | string[]
-    default: string | number | boolean | {
-        name: string 
-        value: string | number | boolean
-        description?: string
-    }
+    value: DropdownValue | string | number | boolean
+    options?: DropdownValue[] | string | number | boolean | string[]
+    default: DropdownValue | string | number | boolean
+}
+
+// Same typings from settings.ts for dropdowns
+export interface DropdownValue {
+    name: string
+    value: string | number | boolean
+    description?: string
 }
 
 /**
@@ -34,21 +29,9 @@ interface BasicSetting {
  */
 interface DropdownSetting extends BasicSetting {
     type: 'dropdown'
-    value: {
-        name: string 
-        value: string | number | boolean
-        description?: string
-    } | string
-    options: {
-        name: string 
-        value: string | number | boolean
-        description?: string
-    }[] | string[]
-    default: {
-        name: string
-        value: string | number | boolean
-        description?: string
-    } | string
+    value: DropdownValue | string
+    options: DropdownValue[] | string[]
+    default: DropdownValue | string
 }
 
 /**
@@ -69,19 +52,11 @@ function defineDropdownSetting(options: {
     //     value: string
     //     description?: string
     // } | string
-    options: {
-        name: string
-        value: string
-        description?: string
-    }[] | string[]
+    options: DropdownValue[] | string[]
     default: string | number
 }): DropdownSetting {
 
-    var def: {
-        name: string
-        value: string | number | boolean
-        description?: string
-    } | string 
+    var def: DropdownValue | string
 
     // get the default value according to name
     if (typeof (options.default) == 'string') {
@@ -144,7 +119,7 @@ function defineStringSetting(options: {
         deprecated: options.deprecated,
         type: "string",
         value: options.default,
-        default: options.default 
+        default: options.default
     }
 }
 
@@ -425,60 +400,103 @@ import { SettingsManager } from 'settings-manager'
 //* Fixed this. Made a 'fork' that only uses a getter to get all settings and has a proxy to detect changes in values
 // Not sure how reactive this will be with Vue
 const settingManager = new SettingsManager<Settings>(defaults, { filename: 'settings', prettify: true })
-if (checkTauri())
-    settingManager.initialize().then(() => {
-        // sync Cache here <- don't need cache rn
-        console.log('Initialized Settings')
-        // settingManager.setCache();
-    })
+// if (checkTauri())
+//     settingManager.initialize().then(() => {
+//         // sync Cache here <- don't need cache rn
+//         console.log('Initialized Settings')
+//         // settingManager.setCache();
+//     })
+
+// https://stackoverflow.com/questions/47946363/typescript-how-to-export-const-in-a-promise
+export namespace Settings {
+    let singletonSettings: Settings
+    let i: number = 0
+    export function getAll(): Settings {
+        console.log('Accessing singleton settings: ', i++)
+        return singletonSettings
+    }
+    export function initialize(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            // Check Tauri
+            if (!checkTauri()) {
+                reject('Not running in Tauri environment')
+                return
+            }
+            // Check if reinitialized?
+            if (singletonSettings) {
+                reject('Setting has already been initialized!')
+                return
+            }
+            settingManager.initialize().then(settings => {
+                console.log('Initialized SettingsManager')
+                singletonSettings = settings
+                resolve()
+            }).catch(reject)
+        })
+    }
+    export function get(key: string) {
+        if (!checkTauri()) return
+
+        const [head, _] = key.split('.')
+        const clone = getAll()
+
+        if (!clone) return
+        if (!clone[head]) return
+        if (!clone[head].properties[key]) return
+
+        return clone[head].properties[key].value
+    }
+    export function set(key: string, value: any) {
+        if (!checkTauri()) return
+
+        const [head, _] = key.split('.')
+        const clone = getAll()
+
+        if (!clone) return
+        if (!clone[head]) return
+        if (!clone[head].properties[key]) return
+
+        //? Proxy handles change in values
+        console.log(`Setting ${key} changing from `, clone[head].properties[key].value, value)
+        clone[head].properties[key].value = value
+    }
+}
+
 
 //! No cache in forked version as of v0.0.1
 // Saves current settings to cache ie ram
 // await settingManager.syncCache()
 
-// export async function get(key: keyof SettingScheme) {
-export async function get(key: string) {
-    if (!checkTauri()) return
+// export async function get(key: string) {
+//     if (!checkTauri()) return
 
-    const [head, _] = key.split('.')
-    const clone = settingManager.getAll()
+//     const [head, _] = key.split('.')
+//     const clone = await settingManager.getAll()
 
-    if (!clone) return
-    if (!clone[head]) return
-    // can accept 2 types of key: eg. 'fonts.size' or 'size'
-    if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
+//     if (!clone) return
+//     if (!clone[head]) return
+//     // can accept 2 types of key: eg. 'fonts.size' or 'size'
+//     if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
 
-    return clone[head].properties[key].value
-}
+//     return clone[head].properties[key].value
+// }
 
-// export async function set(key: keyof SettingScheme, value: {
-//     title: string;
-//     properties: {
-//         [key: string]: SettingTypes;
-//     };
-// }) {
-export async function set(key: string, value: any) {
-    if (!checkTauri()) return
+// export async function set(key: string, value: any) {
+//     if (!checkTauri()) return
 
-    // debugger
+//     // debugger
 
-    const [head, _] = key.split('.')
-    const clone = settingManager.getAll()
+//     const [head, _] = key.split('.')
+//     const clone = await settingManager.getAll()
 
-    if (!clone) return
-    if (!clone[head]) return
-    // can accept 2 types of key: eg. 'fonts.size' or 'size'
-    if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
+//     if (!clone) return
+//     if (!clone[head]) return
+//     // can accept 2 types of key: eg. 'fonts.size' or 'size'
+//     if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
 
-    console.log(`Setting ${key} changing from ${clone[head].properties[key].value} to ${value}`)
-    clone[head].properties[key].value = value
+//     //? Proxy handles change in values
+//     console.log(`Setting ${key} changing from ${clone[head].properties[key].value} to ${value}`)
+//     clone[head].properties[key].value = value
+// }
 
-    // no need to save settings because of a proxy that handles autosaving
-
-    // Seems janky way to set it?
-    // settingManager.settings = clone
-
-    // return tset<SettingScheme>(key, clone, { prettify: true })
-}
-
-export default checkTauri() ? Object.assign(settingManager.getAll() || {}, defaults) : defaults
+export default checkTauri() ? Settings.getAll() : defaults

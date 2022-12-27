@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { set } from '../../settings'
+import { Settings } from '../../settings'
 
 export interface IOption {
     name: string
@@ -44,7 +44,7 @@ export default defineComponent({
             defopt,
             valChange(payload: Event) {
                 console.log((payload.target as HTMLInputElement).value)
-                set(pname, (payload.target as HTMLInputElement).valueAsNumber)
+                Settings.set(pname, (payload.target as HTMLInputElement).valueAsNumber)
             }
         }
     }

@@ -2,7 +2,7 @@
     <div class="select-container">
         <select title="Test Value" class="select-box" @input="valChange($event)">
             <template v-for="{ name, value } in defopt">
-                <option :value="value">{{ name }}</option>
+                <option :value="value" :selected="name == defVal.name">{{ name }}</option>
             </template>
         </select>
     </div>
@@ -10,20 +10,17 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { set } from '../../settings'
-
-// Same typings from settings.ts for dropdowns
-export interface IOption {
-    name: string | number | boolean
-    value: string | number | boolean
-    description?: string
-}
+import { Settings, DropdownValue } from '../../settings'
 
 export default defineComponent({
     props: {
-        options: Array<IOption | string>,
+        options: Array<DropdownValue | string>,
         def: {
-            type: Object as PropType<String | Boolean | Number | IOption>,
+            type: Object as PropType<String | Boolean | Number | DropdownValue>,
+            required: true
+        },
+        value: {
+            type: Object as PropType<string | DropdownValue>,
             required: true
         },
         propname: {
@@ -31,10 +28,11 @@ export default defineComponent({
             required: true
         }
     },
+    emits: ['isDefaultValue'],
     data() {
 
         // Default the options if teh dropbox is only a string array
-        let defopt: IOption[] = this.options?.map(v => {
+        let defopt: DropdownValue[] = this.options?.map(v => {
             if (typeof v == 'string') {
                 return {
                     name: v,
@@ -47,12 +45,29 @@ export default defineComponent({
                 description: v.description
             }
         }) || []
+        let defVal: DropdownValue = ((v: string | DropdownValue): DropdownValue => {
+            if (typeof v == 'string') {
+                return {
+                    name: v,
+                    value: v
+                }
+            }
+            return {
+                name: v.name,
+                value: v.value,
+                description: v.description
+            }
+        })(this.value)
         let pname = this.propname
 
         console.log(defopt)
 
+        //! Move this to methods or something?
+        const v_emit = this.$emit
+
         return {
             defopt,
+            defVal,
             valChange(payload: Event) {
                 // console.log((payload.target as HTMLSelectElement).value)
 
@@ -64,8 +79,11 @@ export default defineComponent({
                     return
                 }
 
+                // Default option selected
+                v_emit('isDefaultValue', defVal, selected)
+
                 console.log(pname, selected)
-                set(pname, selected)
+                Settings.set(pname, selected)
             }
         }
     }

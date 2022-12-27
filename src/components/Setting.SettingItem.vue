@@ -4,14 +4,15 @@
 
             <div class="title">
                 <div class="title-container">
-                    <span class="category">{{ setting?.name.category || '' }}</span>
-                    <span class="label">{{ setting?.name.label }}</span>
+                    <span class="category">{{ setting.name.category || '' }}</span>
+                    <span class="label">{{ setting.name.label }}</span>
                 </div>
             </div>
 
+            <!-- TODO: Move this checkbox to its own component -->
             <div class="description" v-if="type != 'checkbox'">
                 <div class="markdown">
-                    {{ setting?.description }}
+                    {{ setting.description }}
                 </div>
             </div>
 
@@ -21,26 +22,27 @@
                 </div>
                 <div class="description">
                     <div class="markdown">
-                        {{ setting?.description }}
+                        {{ setting.description }}
                     </div>
                 </div>
             </div>
 
             <!-- TODO: Modded indicator is based on default values -->
-            <div class="modifier-indicator" :class="setting?.default != setting?.value ? 'hide' : ''"></div>
+            <div class="modifier-indicator" :class="defaultIndicator ? 'hide' : ''">
+            </div>
 
             <div class="value" v-if="type != 'checkbox'">
                 <!-- TODO: Setting Types -->
-                <Dropdown v-if="type == 'dropdown'" :options="setting?.options" :def="setting?.default"
+                <Dropdown v-if="type == 'dropdown'" :options="setting.options" :value="setting.value"
+                    :def="setting.default" :propname="propname" />
+                <StringValue v-else-if="type == 'string'" :value="setting.value" :def="setting.default"
                     :propname="propname" />
-                <StringValue v-else-if="type == 'string'" :value="setting?.value" :def="setting?.default"
-                    :propname="propname" />
-                <!-- <Checkbox v-if="type == 'checkbox'" :value="setting?.value" :def="setting?.default" /> -->
-                <Number v-else-if="type == 'number'" :value="setting?.value" :def="setting?.default"
+                <!-- <Checkbox v-if="type == 'checkbox'" :value="setting.value" :def="setting.default" /> -->
+                <Number v-else-if="type == 'number'" :value="setting.value" :def="setting.default"
                     :propname="propname" />
             </div>
 
-            <div class="deprecated-msg" :class="setting?.deprecated ? '' : 'hide'">
+            <div class="deprecated-msg" :class="setting.deprecated ? '' : 'hide'">
                 <div class="error">Setting is deprecated</div>
             </div>
 
@@ -68,17 +70,21 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { SettingTypes } from '../settings'
+import { SettingTypes, Settings } from '../settings'
 
 import Dropdown from '@/components/setting-values/Setting.Dropdown.vue'
 import StringValue from '@/components/setting-values/Setting.String.vue'
 // import Checkbox from '@/components/setting-values/Setting.Checkbox.vue'
 import Number from '@/components/setting-values/Setting.Number.vue'
-import { set } from '../settings'
+import { type } from 'os'
+import { DropdownValue } from '../settings'
 
 export default defineComponent({
     props: {
-        setting: Object as PropType<SettingTypes>,
+        setting: {
+            type: Object as PropType<SettingTypes>,
+            required: true
+        },
         type: String as PropType<'string' | 'number' | 'checkbox' | 'dropdown'>,
         propname: {
             type: String,
@@ -95,11 +101,34 @@ export default defineComponent({
 
         // TODO add catch here if passed settings are not of type SettingType
 
+        let pname = this.propname
+
         return {
             toggle_checkbox(event: MouseEvent) {
                 (event.target as HTMLDivElement).classList.toggle('checked')
-            }
+                Settings.set(pname, (event.target as HTMLDivElement).classList.contains('checked'))
+            },
+            defaultIndicator: true
         }
+    },
+    methods: {
+        //! This emitter event is not working with the dropdown. Leaving it for now
+        // TODO: Fix emitter for default indicator
+        isDefaultValue(val1: string | boolean | number | DropdownValue, val2: string | boolean | number | DropdownValue) {
+            let res = (typeof val1 == 'string' && typeof val2 == 'string' && val1 == val2) ||
+                (typeof val1 == 'number' && typeof val2 == 'number' && val1 == val2) ||
+                (typeof val1 == 'boolean' && typeof val2 == 'boolean' && val1 == val2) ||
+                (typeof val1 == 'object' && typeof val2 == 'object' && val1.name == val2.name)
+
+            console.log('Updated default indicator: ', res)
+            this.defaultIndicator = res
+            // return res
+        }
+        //? Method for updating the modifier from the setting item. Hard to implement so using a janky workaround
+        // updateIsDefault (val: boolean) {
+        //     console.log('Changing default value: ', val)
+        //     this.isDefaultValue = val
+        // }
     }
 })
 </script>

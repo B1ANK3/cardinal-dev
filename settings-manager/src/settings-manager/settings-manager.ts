@@ -1,4 +1,3 @@
-import { Console } from 'console';
 import { ConfigOptions } from '../config/config';
 import { STATUS } from '../fs/ensure-settings-file';
 
@@ -59,7 +58,6 @@ export default class SettingsManager<SettingsSchema extends {} = any> {
         const handler: ProxyHandler<SettingsSchema> = {
             set(target, prop, value): boolean {
                 // console.log(`Changed: ${prop} from ${target[prop]} to ${value}`)
-                console.log('Setting value from proxy')
                 // TODO: add specific typings for Proxies
                 // @ts-ignore
                 target[prop] = value
@@ -68,7 +66,6 @@ export default class SettingsManager<SettingsSchema extends {} = any> {
                 return true
             },
             get(target, key) {
-                console.log('Getting value from proxy')
                 // @ts-ignore
                 if (typeof target[key] === 'object' && target[key] != null) {
                     // @ts-ignore

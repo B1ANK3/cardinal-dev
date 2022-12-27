@@ -99,11 +99,7 @@ import GroupLabel from '@/components/Setting.GroupTitle.vue'
 import RowItem from '@/components/Setting.RowItem.vue'
 import SettingItem from '@/components/Setting.SettingItem.vue'
 
-// import settings from '../settings'
-import settings from '../settings'
-// import { getAll } from 'tauri-settings';
-
-console.log(settings)
+import { Settings } from '../settings'
 
 export default defineComponent({
     components: {
@@ -119,32 +115,9 @@ export default defineComponent({
         }
 
         return {
-            settings,
+            settings: Settings.getAll(),
             toggleSubheading
         }
-    },
-    mounted() {
-
-
-
-        // This is cool and all but why is there no vue property for this?
-        // gonna use a media query 
-
-        // function sizing (entries: ResizeObserverEntry[]) {
-        //     let rect = entries[0].contentRect
-
-        //     console.log(rect.width)
-
-        //     if (rect.width < 200) {
-        //         entries[0].target.classList.add('hide')
-        //     } else {
-        //         if (entries[0].target.classList.contains('hide')) {
-        //             entries[0].target.classList.remove('hide')
-        //         }
-        //     }
-        // }
-
-        // new ResizeObserver(sizing).observe(document.querySelector('.common')!)
     }
 })
 </script>
