@@ -44,26 +44,26 @@ import { defineComponent } from 'vue'
 import { invoke } from '@tauri-apps/api'
 
 export default defineComponent({
-	components: {
-	},
+	components: {},
 	mounted() {
 		// vue is loaded and mounted onto page.
 
 		// close splash screen on tauri
-		invoke('close_splashscreen').then(bool => {
-			console.log('Splash Screen closed from vue: ', bool)
-		}).catch(err => {
-			console.log('Splash Screen close not invoke or an error has occurred')
-		})
-
-		
-	}
+		invoke('close_splashscreen')
+			.then(bool => {
+				console.log('Splash Screen closed from vue: ', bool)
+			})
+			.catch(err => {
+				console.log(
+					'Splash Screen close not invoke or an error has occurred'
+				)
+			})
+	},
 })
 </script>
 
 <style lang="scss" scoped>
 .container {
-
 	width: 100%;
 	height: 100%;
 	position: relative;
