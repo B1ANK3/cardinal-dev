@@ -13,8 +13,12 @@
 		<title>SplashScreen</title>
 	</head>
 
-	<body>
-		<h1>Loading...</h1>
+<body>
+    <div class="center">
+        <!-- https://loading.io/css/ -->
+        <div class="lds-dual-ring"></div>
+        <span class="l-text">Loading...</span>
+    </div>
 
 		<style>
 			:root {
@@ -51,9 +55,52 @@
 				align-items: center;
 			}
 
-			h1 {
-				font-size: xx-large;
-			}
-		</style>
-	</body>
+        .center {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .l-text {
+            padding-top: 30%;
+            font-size: xx-large;
+        }
+
+        .lds-dual-ring {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+
+            overflow: initial;
+        }
+
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            /* margin: 8px; */
+            border-radius: 50%;
+            border: 6px solid #fff;
+            border-color: #fff transparent #fff transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+
+        @keyframes lds-dual-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</body>
+
 </html>
