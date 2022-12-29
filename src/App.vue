@@ -11,6 +11,7 @@
 import { defineComponent } from 'vue'
 import { invoke } from '@tauri-apps/api'
 import TopNavBar from './components/TopNavBar.vue'
+import { Settings } from './settings'
 
 export default defineComponent({
 	components: {
@@ -18,6 +19,19 @@ export default defineComponent({
 	},
 	mounted() {
 		// vue is loaded and mounted onto page.
+
+		function setTheme(theme:  string | 'dark' | 'light') {
+			if (theme == 'dark') {
+				document.querySelector('#app')?.setAttribute('theme', 'dark')
+			} else if (theme == 'light') {
+				document.querySelector('#app')?.setAttribute('theme', 'light')
+			}
+		}
+
+		Settings.watch('application.theme', theme => {
+			if (typeof theme != 'object') return
+			setTheme(theme.value as string)
+		}, true)
 
 		// close splash screen on tauri
 		invoke('close_splashscreen').then(bool => {

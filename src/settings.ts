@@ -46,12 +46,6 @@ function defineDropdownSetting(options: {
     }
     description?: string
     deprecated: boolean
-    //! Can't set value in setting
-    // value: {
-    //     name: string
-    //     value: string
-    //     description?: string
-    // } | string
     options: DropdownValue[] | string[]
     default: string | number
 }): DropdownSetting {
@@ -110,7 +104,6 @@ function defineStringSetting(options: {
     }
     deprecated: boolean
     description?: string
-    // value: string
     default: string
 }): StringSetting {
     return {
@@ -144,7 +137,6 @@ function defineBooleanSetting(options: {
     }
     deprecated: boolean
     description?: string
-    // value: boolean
     default: boolean
 }): BooleanSetting {
     return {
@@ -178,7 +170,6 @@ function defineNumberSetting(options: {
     }
     deprecated: boolean
     description?: string
-    // value: number,
     default: number
 }): NumberSetting {
     return {
@@ -237,42 +228,8 @@ export interface SubSettings {
  * @param settings 
  * @returns 
  */
-function defineSettings(settings: Settings): /* SettingSimplified[] */ Settings {
-
+function defineSettings(settings: Settings): Settings {
     return settings
-    // return settings.map(section => {
-
-    //     var sub: {
-    //         title: string
-    //         settings: {
-    //             [key: string]: SettingTypes
-    //         }
-    //     }[] = []
-
-    //     var set: {
-    //         [key: string]: SettingTypes
-    //     } = {}
-
-    //     for (const key in section.properties) {
-
-    //         if (key == 'subsection' && Array.isArray(section.properties.subsection)) {
-    //             sub = section.properties.subsection.map(s => {
-    //                 return {
-    //                     title: s.title,
-    //                     settings: s.properties
-    //                 }
-    //             })
-    //         } else {
-    //             set[key] = (section.properties as { [key: string]: SettingTypes })[key]
-    //         }
-    //     }
-
-    //     return {
-    //         title: section.title,
-    //         settings: set,
-    //         subSettings: sub
-    //     }
-    // })
 }
 
 //! This will have to move to rust when the api has been created
@@ -280,33 +237,9 @@ const defaults = defineSettings({
     'application': {
         title: 'Application',
         properties: {
-            // subsection: {
-            //     'Font': {
-            //         title: 'Font',
-            //         properties: {
-            //             'font.size': defineNumberSetting({
-            //                 description: 'Font Size determined in pixels',
-            //                 title: {
-            //                     label: 'Font Size'
-            //                 },
-            //                 deprecated: false,
-            //                 value: 42
-            //             }),
-            //             'font.family': defineStringSetting({
-            //                 title: {
-            //                     label: 'Font Family'
-            //                 },
-            //                 description: 'Font family of application',
-            //                 deprecated: false,
-            //                 value: 'Oxygen',
-            //                 default: 'Oxygen'
-            //             })
-            //         }
-            //     }
-            // },
-
-
-
+            /**
+             * Application theme. Currently only supports Light and Dark themes controlled by css
+             */
             'application.theme': defineDropdownSetting({
                 title: {
                     label: 'Theme'
@@ -328,68 +261,43 @@ const defaults = defineSettings({
                 default: 0
             }),
 
-            'application.active': defineBooleanSetting({
-                title: {
-                    label: 'Active'
-                },
-                deprecated: false,
-                // value: true,
-                default: true,
-                description: 'Auto starts client on game launch'
-            })
+            //? Currently does nothing in the program, so remove it until its actually implemented
+            // 'application.active': defineBooleanSetting({
+            //     title: {
+            //         label: 'Active'
+            //     },
+            //     deprecated: false,
+            //     default: true,
+            //     description: 'Auto starts client on game launch'
+            // })
         }
     },
-    'font': {
-        title: 'Font',
-        properties: {
-            'font.size': defineNumberSetting({
-                description: 'Font Size determined in pixels',
-                title: {
-                    label: 'Size'
-                },
-                deprecated: false,
-                // value: 42,
-                default: 42
-            }),
+    //? Same as .active
+    // 'font': {
+    //     title: 'Font',
+    //     properties: {
+    //         'font.size': defineNumberSetting({
+    //             description: 'Font Size determined in pixels',
+    //             title: {
+    //                 label: 'Size'
+    //             },
+    //             deprecated: false,
+    //             // value: 42,
+    //             default: 42
+    //         }),
 
-            'font.family': defineStringSetting({
-                title: {
-                    label: 'Family'
-                },
-                description: 'Font family of application',
-                deprecated: false,
-                // value: 'Oxygen',
-                default: 'Oxygen'
-            }),
-        }
-    }
+    //         'font.family': defineStringSetting({
+    //             title: {
+    //                 label: 'Family'
+    //             },
+    //             description: 'Font family of application',
+    //             deprecated: false,
+    //             // value: 'Oxygen',
+    //             default: 'Oxygen'
+    //         }),
+    //     }
+    // }
 })
-
-// Potential composition API
-// const compSettings:{
-//     [key: string]: {
-//         title: string
-//         properties: {
-//             test => any
-//         }
-//     }
-// } = {
-//     'application': {
-//         title: 'Application',
-//         properties: {
-//             test('font.size', {
-
-//             }),
-//             test('font.language', {
-
-//             })
-//         }
-//     }
-// }
-
-// function test(key: string, options: {}): any {
-//     return
-// }
 
 import { checkTauri } from './util'
 import { SettingsManager } from 'settings-manager'
@@ -399,20 +307,13 @@ import { SettingsManager } from 'settings-manager'
 // breaks when using settings manager. Also typings is a problem because of the dot-notation.
 //* Fixed this. Made a 'fork' that only uses a getter to get all settings and has a proxy to detect changes in values
 // Not sure how reactive this will be with Vue
-const settingManager = new SettingsManager<Settings>(defaults, { filename: 'settings', prettify: true })
-// if (checkTauri())
-//     settingManager.initialize().then(() => {
-//         // sync Cache here <- don't need cache rn
-//         console.log('Initialized Settings')
-//         // settingManager.setCache();
-//     })
+const settingManager = new SettingsManager<Settings>(defaults, { filename: 'settings', prettify: true, removeNonDefaults: true })
 
 // https://stackoverflow.com/questions/47946363/typescript-how-to-export-const-in-a-promise
 export namespace Settings {
     let singletonSettings: Settings
-    let i: number = 0
+    let watchSettings: {[key: string]: ((value: any) => void)[]} = {}
     export function getAll(): Settings {
-        console.log('Accessing singleton settings: ', i++)
         return singletonSettings
     }
     export function initialize(): Promise<void> {
@@ -433,6 +334,17 @@ export namespace Settings {
                 resolve()
             }).catch(reject)
         })
+    }
+    export function watch(key: string, callback: (value: string | number | boolean | DropdownValue | undefined) => void, immediate: boolean = false) {
+        if (watchSettings[key]) {
+            watchSettings[key].push(callback)
+        } else {
+            watchSettings[key] = [callback]
+        }
+
+        if (immediate) {
+            callback(get(key))
+        }
     }
     export function get(key: string) {
         if (!checkTauri()) return
@@ -459,44 +371,13 @@ export namespace Settings {
         //? Proxy handles change in values
         console.log(`Setting ${key} changing from `, clone[head].properties[key].value, value)
         clone[head].properties[key].value = value
+
+        if (watchSettings[key]) {
+            watchSettings[key].forEach(callback => {
+                callback(value)
+            })
+        }
     }
 }
-
-
-//! No cache in forked version as of v0.0.1
-// Saves current settings to cache ie ram
-// await settingManager.syncCache()
-
-// export async function get(key: string) {
-//     if (!checkTauri()) return
-
-//     const [head, _] = key.split('.')
-//     const clone = await settingManager.getAll()
-
-//     if (!clone) return
-//     if (!clone[head]) return
-//     // can accept 2 types of key: eg. 'fonts.size' or 'size'
-//     if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
-
-//     return clone[head].properties[key].value
-// }
-
-// export async function set(key: string, value: any) {
-//     if (!checkTauri()) return
-
-//     // debugger
-
-//     const [head, _] = key.split('.')
-//     const clone = await settingManager.getAll()
-
-//     if (!clone) return
-//     if (!clone[head]) return
-//     // can accept 2 types of key: eg. 'fonts.size' or 'size'
-//     if (!clone[head].properties[key] /* && !clone[head].properties[sub] */) return
-
-//     //? Proxy handles change in values
-//     console.log(`Setting ${key} changing from ${clone[head].properties[key].value} to ${value}`)
-//     clone[head].properties[key].value = value
-// }
 
 export default checkTauri() ? Settings.getAll() : defaults

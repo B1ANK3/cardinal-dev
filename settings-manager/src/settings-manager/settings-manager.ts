@@ -1,4 +1,5 @@
-import { ConfigOptions } from '../config/config';
+import includeAlike from '../utils/include-alike';
+import { ConfigOptions, parseOptions } from '../config/config';
 import { STATUS } from '../fs/ensure-settings-file';
 
 import { getSettings, saveSettings } from '../fs/load-settings';
@@ -41,10 +42,11 @@ export default class SettingsManager<SettingsSchema extends {} = any> {
             console.log('File created with defaults')
         }
         else if (currentSettings.status === STATUS.FILE_EXISTS) {
-            //! This needs to include the defaults and merge the 2 objects
-            // Object.assign(this.settings, this.default)
-            // this.settings = { ...currentSettings.settings };
-            this.settings = mergeDeep<SettingsSchema>({ ...this.default }, { ...currentSettings.settings })
+            //! If the settings file has props that are not in the defaults, exclude them
+            if (parseOptions(this.options).removeNonDefaults)
+                this.settings = includeAlike({...this.default}, {...currentSettings.settings})
+            else
+                this.settings = mergeDeep<SettingsSchema>({ ...this.default }, { ...currentSettings.settings })
             console.log('File exists and defaults were merged', this.settings)
             // save default settings
             await this.saveSettings()

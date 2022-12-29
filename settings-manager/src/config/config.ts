@@ -22,6 +22,11 @@ export interface IConfig {
    * Default: 2
    */
   numSpaces: number;
+  /**
+   * Whether to exclude properties of the loaded settings file if they are not in the default object.
+   * Default: false
+   */
+  removeNonDefaults: boolean;
 }
 
 export type ConfigOptions = IConfig | {};

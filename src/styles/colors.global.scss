@@ -2,19 +2,14 @@ $black: #000;
 
 $dark-grey: #121212;
 
-// declare css global variables to use
-:root {
-  --primary: #fff;
-}
-
 // https://stackoverflow.com/questions/53579774/how-to-get-values-of-array-in-scss
 
-.dark {
+[theme="dark"] {
   --primary: #000;
   --secondary: #fff;
 }
 
-.light {
+[theme="light"] {
   --primary: #fff;
   --secondary: #000;
 }
