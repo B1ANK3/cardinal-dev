@@ -17,7 +17,7 @@ export default defineComponent({
 	components: {
 		TopNavBar
 	},
-	mounted() {
+	async mounted() {
 		// vue is loaded and mounted onto page.
 
 		function setTheme(theme:  string | 'dark' | 'light') {

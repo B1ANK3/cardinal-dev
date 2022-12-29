@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Cardinal",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "tauri": {
     "allowlist": {
@@ -73,9 +73,9 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/B1ANK3/cardinal-dev/releases/latest/download/latest-version.json"
+        "https://github.com/B1ANK3/cardinal-dev/releases/latest/download/latest.json"
       ],
-      "dialog": false,
+      "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4QzdFRUUwMjlBRDdEMDIKUldRQ2ZhMHA0TzdIT0UvMkhtQlF6MEhlS0wxaXBLSFBsb2FwYU9WZWJKS2pLejI5OWgxMzhwK2cK",
       "windows": {
         "installMode": "passive"
