@@ -1,113 +1,113 @@
 {
-  "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
-  },
-  "package": {
-    "productName": "Cardinal",
-    "version": "0.1.1"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "fs": {
-        "all": true,
-        "copyFile": false,
-        "createDir": true,
-        "exists": false,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": false,
-        "removeFile": false,
-        "renameFile": false,
-        "scope": ["$APPCONFIG", "$APPCONFIG/*"],
-        "writeFile": true
-      },
-      "path": {
-        "all": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "Utility",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.cardinal.dev",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "webviewInstallMode": {
-          "silent": true,
-          "type": "downloadBootstrapper"
-        },
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": true,
-      "endpoints": [
-        "https://github.com/B1ANK3/cardinal-dev/releases/latest/download/latest-version.json"
-      ],
-      "dialog": false,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4QzdFRUUwMjlBRDdEMDIKUldRQ2ZhMHA0TzdIT0UvMkhtQlF6MEhlS0wxaXBLSFBsb2FwYU9WZWJKS2pLejI5OWgxMzhwK2cK",
-      "windows": {
-        "installMode": "passive"
-      }
-    },
-    "systemTray": {
-      "iconPath": "icons/128x128.png",
-      "iconAsTemplate": true,
-      "title": "Cardinal",
-      "menuOnLeftClick": true
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "cardinal",
-        "label": "main",
-        "center": true,
-        "width": 800,
-        "visible": false
-      },
-      {
-        "fullscreen": false,
-        "height": 400,
-        "center": true,
-        "resizable": false,
-        "width": 300,
-        "url": "splashscreen.html",
-        "label": "splash",
-        "decorations": false
-      }
-    ]
-  }
+	"build": {
+		"beforeDevCommand": "yarn dev",
+		"beforeBuildCommand": "yarn build",
+		"devPath": "http://localhost:1420",
+		"distDir": "../dist",
+		"withGlobalTauri": false
+	},
+	"package": {
+		"productName": "Cardinal",
+		"version": "0.1.1"
+	},
+	"tauri": {
+		"allowlist": {
+			"all": true,
+			"fs": {
+				"all": true,
+				"copyFile": false,
+				"createDir": true,
+				"exists": false,
+				"readDir": true,
+				"readFile": true,
+				"removeDir": false,
+				"removeFile": false,
+				"renameFile": false,
+				"scope": ["$APPCONFIG", "$APPCONFIG/*"],
+				"writeFile": true
+			},
+			"path": {
+				"all": true
+			}
+		},
+		"bundle": {
+			"active": true,
+			"category": "Utility",
+			"copyright": "",
+			"deb": {
+				"depends": []
+			},
+			"externalBin": [],
+			"icon": [
+				"icons/32x32.png",
+				"icons/128x128.png",
+				"icons/128x128@2x.png",
+				"icons/icon.icns",
+				"icons/icon.ico"
+			],
+			"identifier": "com.cardinal.dev",
+			"longDescription": "",
+			"macOS": {
+				"entitlements": null,
+				"exceptionDomain": "",
+				"frameworks": [],
+				"providerShortName": null,
+				"signingIdentity": null
+			},
+			"resources": [],
+			"shortDescription": "",
+			"targets": "all",
+			"windows": {
+				"certificateThumbprint": null,
+				"webviewInstallMode": {
+					"silent": true,
+					"type": "downloadBootstrapper"
+				},
+				"digestAlgorithm": "sha256",
+				"timestampUrl": ""
+			}
+		},
+		"security": {
+			"csp": null
+		},
+		"updater": {
+			"active": true,
+			"endpoints": [
+				"https://github.com/B1ANK3/cardinal-dev/releases/latest/download/latest-version.json"
+			],
+			"dialog": false,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4QzdFRUUwMjlBRDdEMDIKUldRQ2ZhMHA0TzdIT0UvMkhtQlF6MEhlS0wxaXBLSFBsb2FwYU9WZWJKS2pLejI5OWgxMzhwK2cK",
+			"windows": {
+				"installMode": "passive"
+			}
+		},
+		"systemTray": {
+			"iconPath": "icons/128x128.png",
+			"iconAsTemplate": true,
+			"title": "Cardinal",
+			"menuOnLeftClick": true
+		},
+		"windows": [
+			{
+				"fullscreen": false,
+				"height": 600,
+				"resizable": true,
+				"title": "cardinal",
+				"label": "main",
+				"center": true,
+				"width": 800,
+				"visible": false
+			},
+			{
+				"fullscreen": false,
+				"height": 400,
+				"center": true,
+				"resizable": false,
+				"width": 300,
+				"url": "splashscreen.html",
+				"label": "splash",
+				"decorations": false
+			}
+		]
+	}
 }

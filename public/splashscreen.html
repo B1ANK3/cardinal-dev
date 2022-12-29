@@ -13,12 +13,12 @@
 		<title>SplashScreen</title>
 	</head>
 
-<body>
-    <div class="center">
-        <!-- https://loading.io/css/ -->
-        <div class="lds-dual-ring"></div>
-        <span class="l-text">Loading...</span>
-    </div>
+	<body>
+		<div class="center">
+			<!-- https://loading.io/css/ -->
+			<div class="lds-dual-ring"></div>
+			<span class="l-text">Loading...</span>
+		</div>
 
 		<style>
 			:root {
@@ -27,15 +27,15 @@
 				line-height: 24px;
 				font-weight: 400;
 
-            background-color: #2b2b2b;
-            color: #fefefe;
+				background-color: #2b2b2b;
+				color: #fefefe;
 
-            font-synthesis: none;
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-text-size-adjust: 100%;
-        }
+				font-synthesis: none;
+				text-rendering: optimizeLegibility;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				-webkit-text-size-adjust: 100%;
+			}
 
 			*,
 			html {
@@ -55,52 +55,51 @@
 				align-items: center;
 			}
 
-        .center {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            overflow: hidden;
+			.center {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				align-items: center;
+				overflow: hidden;
 
-            width: fit-content;
-            height: fit-content;
-        }
+				width: fit-content;
+				height: fit-content;
+			}
 
-        .l-text {
-            padding-top: 30%;
-            font-size: xx-large;
-        }
+			.l-text {
+				padding-top: 30%;
+				font-size: xx-large;
+			}
 
-        .lds-dual-ring {
-            display: inline-block;
-            width: 80px;
-            height: 80px;
+			.lds-dual-ring {
+				display: inline-block;
+				width: 80px;
+				height: 80px;
 
-            overflow: initial;
-        }
+				overflow: initial;
+			}
 
-        .lds-dual-ring:after {
-            content: " ";
-            display: block;
-            width: 64px;
-            height: 64px;
-            /* margin: 8px; */
-            border-radius: 50%;
-            border: 6px solid #fff;
-            border-color: #fff transparent #fff transparent;
-            animation: lds-dual-ring 1.2s linear infinite;
-        }
+			.lds-dual-ring:after {
+				content: ' ';
+				display: block;
+				width: 64px;
+				height: 64px;
+				/* margin: 8px; */
+				border-radius: 50%;
+				border: 6px solid #fff;
+				border-color: #fff transparent #fff transparent;
+				animation: lds-dual-ring 1.2s linear infinite;
+			}
 
-        @keyframes lds-dual-ring {
-            0% {
-                transform: rotate(0deg);
-            }
+			@keyframes lds-dual-ring {
+				0% {
+					transform: rotate(0deg);
+				}
 
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-</body>
-
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
+	</body>
 </html>

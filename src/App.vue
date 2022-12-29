@@ -14,20 +14,22 @@ import TopNavBar from './components/TopNavBar.vue'
 
 export default defineComponent({
 	components: {
-		TopNavBar
+		TopNavBar,
 	},
 	mounted() {
 		// vue is loaded and mounted onto page.
 
 		// close splash screen on tauri
-		invoke('close_splashscreen').then(bool => {
-			console.log('Splash Screen closed from vue: ', bool)
-		}).catch(err => {
-			console.log('Splash Screen close not invoke or an error has occurred')
-		})
-
-
-	}
+		invoke('close_splashscreen')
+			.then(bool => {
+				console.log('Splash Screen closed from vue: ', bool)
+			})
+			.catch(err => {
+				console.log(
+					'Splash Screen close not invoke or an error has occurred'
+				)
+			})
+	},
 })
 </script>
 

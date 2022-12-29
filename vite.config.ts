@@ -1,44 +1,46 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
-import { readdirSync } from "fs"
+import { readdirSync } from 'fs'
 
 function globalStyleSheets(): string {
-  let files = ''
+	let files = ''
 
-  readdirSync(resolve(__dirname, './src/styles')).filter(v => v.includes('.global.')).forEach(v => {
-    files += `@import "@/styles/${v}";\n`
-  })
+	readdirSync(resolve(__dirname, './src/styles'))
+		.filter(v => v.includes('.global.'))
+		.forEach(v => {
+			files += `@import "@/styles/${v}";\n`
+		})
 
-  return files
+	return files
 }
 
 console.log(globalStyleSheets())
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+	plugins: [vue()],
 
-  // CSS options for global styles
-  css: {
-    preprocessorOptions: {
-      scss: {
-        // To fix error regrading the file loading itself and creating a circular dependency
-        additionalData(source: string, fp: string) {
-          // ignore files that end in .global.scss
-          if (fp.includes('.global.')) return source;
-          return `${globalStyleSheets()}${source}`
-        }
-      }
-    }
-  },
+	// CSS options for global styles
+	css: {
+		preprocessorOptions: {
+			scss: {
+				// To fix error regrading the file loading itself and creating a circular dependency
+				additionalData(source: string, fp: string) {
+					// ignore files that end in .global.scss
+					if (fp.includes('.global.')) return source
+					return `${globalStyleSheets()}${source}`
+				},
+			},
+		},
+	},
 
-  // Resolve @ alias for importing modules and css files
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src')
-    }
-  },
+	// Resolve @ alias for importing modules and css files
+	resolve: {
+		alias: {
+			'@': resolve(__dirname, './src'),
+		},
+	},
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	// prevent vite from obscuring rust errors

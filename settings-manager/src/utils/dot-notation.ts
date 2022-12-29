@@ -1,4 +1,4 @@
-import type { Path, PathValue } from '../types/dot-notation';
+import type { Path, PathValue } from '../types/dot-notation'
 
 /**
  * @internal

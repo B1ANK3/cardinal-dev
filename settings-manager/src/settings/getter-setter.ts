@@ -1,7 +1,7 @@
-import { ConfigOptions } from '../config/config';
-import { getSettings, saveSettings } from '../fs/load-settings';
+import { ConfigOptions } from '../config/config'
+import { getSettings, saveSettings } from '../fs/load-settings'
 // import { getDotNotation, setDotNotation } from '../utils/dot-notation';
-import type { Path, PathValue } from '../types/dot-notation';
+import type { Path, PathValue } from '../types/dot-notation'
 
 /**
  * ! These functions are not managed through a settings Manager and therefore don't have the correct type safety that I require

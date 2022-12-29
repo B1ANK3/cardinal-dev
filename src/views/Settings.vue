@@ -1,68 +1,81 @@
 <template>
-    <div class="container">
-        <!-- Controls width -->
-        <div class="settings-editor">
+	<div class="container">
+		<!-- Controls width -->
+		<div class="settings-editor">
+			<!-- Implement when needed. Has a search bar etc -->
+			<!-- <div class="settings-header"></div> -->
 
-            <!-- Implement when needed. Has a search bar etc -->
-            <!-- <div class="settings-header"></div> -->
+			<div class="settings-body">
+				<div class="common">
+					<div class="list">
+						<div class="scrollable-list">
+							<div class="list-rows">
+								<!-- Don't need to move this to its own  component as its all the same -->
+								<template v-for="headings in settings">
+									<div class="list-row">
+										<div
+											class="list-row-item"
+											@click="toggleSubheading($event)"
+										>
+											<div class="list-row-arrow">
+												<div class="row-arrow"></div>
+											</div>
+											<div class="list-row-content">
+												<div class="entry">
+													{{ headings.title }}
+												</div>
+											</div>
+										</div>
+										<div class="list-items">
+											<template
+												v-for="sub in headings.properties"
+											>
+												<div
+													class="list-content-container"
+												>
+													<div
+														class="list-row-content"
+													>
+														<div class="entry">
+															{{ sub.name.label }}
+														</div>
+													</div>
+												</div>
+											</template>
+										</div>
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="view">
+					<div class="tree">
+						<div class="scrollable">
+							<div class="rows">
+								<template
+									v-for="headings in settings"
+									v-if="settings != undefined"
+								>
+									<RowItem>
+										<GroupLabel :heading="headings.title" />
+									</RowItem>
 
-            <div class="settings-body">
-                <div class="common">
+									<template
+										v-for="(
+											setting, propname
+										) in headings.properties"
+									>
+										<RowItem>
+											<SettingItem
+												:type="setting.type"
+												:setting="setting"
+												:propname="propname"
+											/>
+										</RowItem>
+									</template>
 
-                    <div class="list">
-                        <div class="scrollable-list">
-                            <div class="list-rows">
-
-                                <!-- Don't need to move this to its own  component as its all the same -->
-                                <template v-for="headings in settings">
-                                    <div class="list-row">
-                                        <div class="list-row-item" @click="toggleSubheading($event)">
-                                            <div class="list-row-arrow">
-                                                <div class="row-arrow"></div>
-                                            </div>
-                                            <div class="list-row-content">
-                                                <div class="entry">{{ headings.title }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="list-items">
-
-                                            <template v-for="sub in headings.properties">
-                                                <div class="list-content-container">
-                                                    <div class="list-row-content">
-                                                        <div class="entry">{{ sub.name.label }}</div>
-                                                    </div>
-                                                </div>
-                                            </template>
-
-                                        </div>
-                                    </div>
-                                </template>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-                <div class="view">
-
-                    <div class="tree">
-                        <div class="scrollable">
-                            <div class="rows">
-
-                                <template v-for="headings in settings" v-if="settings != undefined">
-                                    <RowItem>
-                                        <GroupLabel :heading="headings.title" />
-                                    </RowItem>
-
-                                    <template v-for="(setting, propname) in headings.properties">
-                                        <RowItem>
-                                            <SettingItem :type="setting.type" :setting="setting" :propname="propname" />
-                                        </RowItem>
-                                    </template>
-
-                                    <!-- <template v-for="subsection in headings.properties">
+									<!-- <template v-for="subsection in headings.properties">
                                         <RowItem>
                                             TODO here we need to separate the settings from subheadings
                                             <GroupLabel :heading="subsection.title" />
@@ -74,27 +87,24 @@
                                             </RowItem>
                                         </template>
                                     </template> -->
-                                </template>
+								</template>
 
-                                <template v-else>
-                                    <div class="ntauri">
-                                        Not running in Tauri environment
-                                    </div>
-                                </template>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
+								<template v-else>
+									<div class="ntauri">
+										Not running in Tauri environment
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 import GroupLabel from '@/components/Setting.GroupTitle.vue'
 import RowItem from '@/components/Setting.RowItem.vue'
 import SettingItem from '@/components/Setting.SettingItem.vue'
@@ -102,354 +112,329 @@ import SettingItem from '@/components/Setting.SettingItem.vue'
 import { Settings } from '../settings'
 
 export default defineComponent({
-    components: {
-        GroupLabel,
-        RowItem,
-        SettingItem
-    },
-    data() {
+	components: {
+		GroupLabel,
+		RowItem,
+		SettingItem,
+	},
+	data() {
+		function toggleSubheading(event: MouseEvent) {
+			var target = (event.target as HTMLDivElement).parentElement
+			target?.classList.toggle('open')
+		}
 
-        function toggleSubheading(event: MouseEvent) {
-            var target = (event.target as HTMLDivElement).parentElement
-            target?.classList.toggle('open')
-        }
-
-        return {
-            settings: Settings.getAll(),
-            toggleSubheading
-        }
-    }
+		return {
+			settings: Settings.getAll(),
+			toggleSubheading,
+		}
+	},
 })
 </script>
 
 <style lang="scss" scoped>
 .container {
+	display: block;
 
-    display: block;
-
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 .settings-editor {
-    overflow: hidden;
-    max-width: 1200px;
-    height: 100%;
-    width: 100%;
-    margin: auto;
-    padding: 0 8px;
+	overflow: hidden;
+	max-width: 1200px;
+	height: 100%;
+	width: 100%;
+	margin: auto;
+	padding: 0 8px;
 }
 
 .settings-body {
-    margin-top: 16px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    // height: 100%;
-    // 16px is the amount the view is moved down because of the parent margin
-    // this lets the user scroll to the last setting on the page
-    height: calc(100% - 16px);
-    width: 100%;
+	margin-top: 16px;
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	// height: 100%;
+	// 16px is the amount the view is moved down because of the parent margin
+	// this lets the user scroll to the last setting on the page
+	height: calc(100% - 16px);
+	width: 100%;
 
-    .common {
-        height: 100%;
-        white-space: nowrap;
+	.common {
+		height: 100%;
+		white-space: nowrap;
 
-        max-width: 250px;
-        width: 25%;
-    }
+		max-width: 250px;
+		width: 25%;
+	}
 
-    @media (max-width: 816px) {
-        .common {
-            display: none;
-        }
-    }
-
-
-
+	@media (max-width: 816px) {
+		.common {
+			display: none;
+		}
+	}
 }
 
 .common {
-    .list {
+	.list {
+		pointer-events: auto;
+		outline: 0 !important;
 
-        pointer-events: auto;
-        outline: 0 !important;
+		-webkit-user-select: none;
+		user-select: none;
 
-        -webkit-user-select: none;
-        user-select: none;
+		position: relative;
+		height: 100%;
+		width: 100%;
+		white-space: nowrap;
 
-        position: relative;
-        height: 100%;
-        width: 100%;
-        white-space: nowrap;
+		.scrollable-list {
+			position: relative;
+			overflow: hidden;
+			padding-top: 0;
 
-        .scrollable-list {
-            position: relative;
-            overflow: hidden;
-            padding-top: 0;
+			height: 100%;
 
-            height: 100%;
+			display: block;
 
-            display: block;
+			.list-rows {
+				overflow: hidden;
+				contain: strict;
+				transform: translate3d(0px, 0px, 0px);
+				left: 0;
+				top: 0;
+				height: 100%;
 
-            .list-rows {
-                overflow: hidden;
-                contain: strict;
-                transform: translate3d(0px, 0px, 0px);
-                left: 0;
-                top: 0;
-                height: 100%;
+				position: relative;
+				width: 100%;
+				display: block;
 
-                position: relative;
-                width: 100%;
-                display: block;
+				.list-row {
+					// height: 22px;
+					height: fit-content;
+					line-height: 22px;
 
-                .list-row {
+					cursor: pointer;
+					width: 100%;
+					overflow: hidden;
 
-                    // height: 22px;
-                    height: fit-content;
-                    line-height: 22px;
+					display: block;
 
-                    cursor: pointer;
-                    width: 100%;
-                    overflow: hidden;
+					pointer-events: none;
 
-                    display: block;
+					.list-row-item {
+						pointer-events: all;
 
-                    pointer-events: none;
+						display: flex;
+						height: 100%;
+						align-items: center;
+						position: relative;
 
-                    .list-row-item {
+						&:hover {
+							// TODO COLOURSSS
+							background-color: darken(#fff, 10%);
+						}
 
-                        pointer-events: all;
+						.list-row-arrow {
+							padding-left: 8px;
+							padding-right: 6px;
 
-                        display: flex;
-                        height: 100%;
-                        align-items: center;
-                        position: relative;
+							pointer-events: none;
 
-                        &:hover {
-                            // TODO COLOURSSS
-                            background-color: darken(#fff, 10%);
-                        }
+							flex-shrink: 0;
+							// width: 16px;
+							display: flex !important;
+							align-items: center;
+							justify-content: center;
 
-                        .list-row-arrow {
-                            padding-left: 8px;
-                            padding-right: 6px;
+							height: 100%;
+							width: fit-content;
 
-                            pointer-events: none;
+							.row-arrow {
+								// TODO arrows turning animation
+								// animation: 0.3s normal;
 
-                            flex-shrink: 0;
-                            // width: 16px;
-                            display: flex !important;
-                            align-items: center;
-                            justify-content: center;
+								width: 16px;
+								height: 16px;
 
-                            height: 100%;
-                            width: fit-content;
+								background: url('@/assets/arrow-right.svg')
+									no-repeat center center;
+								background-size: contain;
+								opacity: 1;
+								transition: opacity 0.3s;
 
-                            .row-arrow {
+								display: flex;
+								align-items: center;
+								justify-content: center;
+							}
+						}
 
-                                // TODO arrows turning animation
-                                // animation: 0.3s normal;
+						.list-row-content {
+							pointer-events: none;
 
-                                width: 16px;
-                                height: 16px;
+							display: flex;
+							flex: 1;
+							overflow: hidden;
+							height: 100%;
 
-                                background: url('@/assets/arrow-right.svg') no-repeat center center;
-                                background-size: contain;
-                                opacity: 1;
-                                transition: opacity 0.3s;
+							.entry {
+								overflow: hidden;
+								text-overflow: ellipsis;
+								line-height: 22px;
+								flex-shrink: 1;
+								display: block;
+							}
+						}
+					}
 
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                            }
+					&:not(.open) > .list-items {
+						display: none !important;
+					}
 
-                        }
+					&.open .row-arrow {
+						transform: rotate(90deg);
+						transition: 0.3s linear;
+					}
 
-                        .list-row-content {
+					.list-items {
+						display: flex;
+						flex-direction: column;
+						height: fit-content;
+						pointer-events: visible;
 
-                            pointer-events: none;
+						.list-content-container {
+							width: 100%;
+							height: 100%;
+							display: block;
+							overflow: hidden;
+							flex: 1;
 
-                            display: flex;
-                            flex: 1;
-                            overflow: hidden;
-                            height: 100%;
+							&:hover {
+								// TODO Colours
+								background-color: darken(#fff, 50%);
+							}
 
-                            .entry {
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                line-height: 22px;
-                                flex-shrink: 1;
-                                display: block;
-                            }
-                        }
+							.list-row-content {
+								margin-left: 40px;
+								display: flex;
+								flex: 1;
+								overflow: hidden;
+								height: 100%;
 
-                    }
-
-                    &:not(.open)>.list-items {
-                        display: none !important;
-                    }
-
-                    &.open .row-arrow {
-                        transform: rotate(90deg);
-                        transition: 0.3s linear;
-                    }
-
-                    .list-items {
-                        display: flex;
-                        flex-direction: column;
-                        height: fit-content;
-                        pointer-events: visible;
-
-                        .list-content-container {
-
-                            width: 100%;
-                            height: 100%;
-                            display: block;
-                            overflow: hidden;
-                            flex: 1;
-
-                            &:hover {
-                                // TODO Colours
-                                background-color: darken(#fff, 50%);
-                            }
-
-                            .list-row-content {
-
-                                margin-left: 40px;
-                                display: flex;
-                                flex: 1;
-                                overflow: hidden;
-                                height: 100%;
-
-                                .entry {
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
-                                    line-height: 22px;
-                                    flex-shrink: 1;
-                                    display: block;
-                                }
-                            }
-                        }
-
-                    }
-
-                }
-
-            }
-        }
-
-    }
+								.entry {
+									overflow: hidden;
+									text-overflow: ellipsis;
+									line-height: 22px;
+									flex-shrink: 1;
+									display: block;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 .view {
-    height: 100%;
-    // flexbox position
-    flex-grow: 1;
+	height: 100%;
+	// flexbox position
+	flex-grow: 1;
 
-    // separating line
-    &::before {
-        position: absolute;
-        display: block;
-        top: 0;
-        width: 1px;
-        height: 100%;
-        background-color: black;
-        content: " ";
-    }
+	// separating line
+	&::before {
+		position: absolute;
+		display: block;
+		top: 0;
+		width: 1px;
+		height: 100%;
+		background-color: black;
+		content: ' ';
+	}
 
-    .tree {
-        display: block;
-        width: 100%;
-        height: 100%;
+	.tree {
+		display: block;
+		width: 100%;
+		height: 100%;
 
-        border-spacing: 0;
-        border-collapse: separate;
-        position: relative;
+		border-spacing: 0;
+		border-collapse: separate;
+		position: relative;
 
-        .scrollable {
-            position: relative;
-            // width: 100%;
-            height: 100%;
-            white-space: nowrap;
-            display: block;
-            padding-top: 0;
+		.scrollable {
+			position: relative;
+			// width: 100%;
+			height: 100%;
+			white-space: nowrap;
+			display: block;
+			padding-top: 0;
 
-            user-select: none;
-            -webkit-user-select: none;
+			user-select: none;
+			-webkit-user-select: none;
 
-            .rows {
-                contain: strict;
-                min-height: 100%;
-                position: relative;
-                width: 100%;
-                overflow-y: auto;
-                display: block;
+			.rows {
+				contain: strict;
+				min-height: 100%;
+				position: relative;
+				width: 100%;
+				overflow-y: auto;
+				display: block;
 
-                .ntauri {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+				.ntauri {
+					display: flex;
+					justify-content: center;
+					align-items: center;
 
-                    font-size: xx-large;
+					font-size: xx-large;
 
-                    height: 100%;
-                    width: 100%;
-                }
-
-            }
-
-        }
-
-    }
-
+					height: 100%;
+					width: 100%;
+				}
+			}
+		}
+	}
 }
 
 .selected {
-    background-color: darken(white, 16%);
+	background-color: darken(white, 16%);
 }
 
 .row-item {
-    display: block;
-    // overflow: visible;
-    cursor: default;
-    width: 100%;
-    // TODO this needs to be dynamic fit-content?
-    // height: 42px;
-    height: fit-content;
+	display: block;
+	// overflow: visible;
+	cursor: default;
+	width: 100%;
+	// TODO this needs to be dynamic fit-content?
+	// height: 42px;
+	height: fit-content;
 
-    .row {
+	.row {
+		display: flex;
+		height: 100%;
+		width: 100%;
+		align-items: center;
+		position: relative;
 
-        display: flex;
-        height: 100%;
-        width: 100%;
-        align-items: center;
-        position: relative;
+		.group-title {
+			max-width: min(100%, 1200px);
+			width: 100%;
+			margin: auto;
+			padding-left: 24px;
+			padding-right: 24px;
+			// overflow: visible;
 
-        .group-title {
-
-            max-width: min(100%, 1200px);
-            width: 100%;
-            margin: auto;
-            padding-left: 24px;
-            padding-right: 24px;
-            // overflow: visible;
-
-            .group-title-label {
-
-                font-weight: 600;
-                font-size: 26px;
-                color: black;
-                height: 100%;
-                padding: 10px 10px 10px 15px;
-                position: relative;
-                overflow: hidden;
-                width: 100%;
-                text-overflow: ellipsis;
-
-            }
-        }
-    }
+			.group-title-label {
+				font-weight: 600;
+				font-size: 26px;
+				color: black;
+				height: 100%;
+				padding: 10px 10px 10px 15px;
+				position: relative;
+				overflow: hidden;
+				width: 100%;
+				text-overflow: ellipsis;
+			}
+		}
+	}
 }
 </style>

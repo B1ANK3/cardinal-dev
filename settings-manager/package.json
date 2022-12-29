@@ -1,13 +1,13 @@
 {
-  "name": "settings-manager",
-  "version": "0.0.1",
-  "scripts": {
-    "build": "tsc"
-  },
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
-  "license": "MIT",
-  "devDependencies": {
-    "typescript": "^4.6.4"
-  }
+	"name": "settings-manager",
+	"version": "0.0.1",
+	"scripts": {
+		"build": "tsc"
+	},
+	"types": "dist/index.d.ts",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"devDependencies": {
+		"typescript": "^4.6.4"
+	}
 }

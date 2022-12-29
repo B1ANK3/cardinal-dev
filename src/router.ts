@@ -3,15 +3,15 @@ import Home from './views/Home.vue'
 import Settings from './views/Settings.vue'
 
 export default createRouter({
-    routes: [
-        {
-            path: "/",
-            component: Home
-        },
-        {
-            path: '/settings',
-            component: Settings
-        }
-    ],
-    history: createWebHistory()
+	routes: [
+		{
+			path: '/',
+			component: Home,
+		},
+		{
+			path: '/settings',
+			component: Settings,
+		},
+	],
+	history: createWebHistory(),
 })

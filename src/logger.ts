@@ -15,8 +15,6 @@
     TRACE – To provide the greatest information on a specific event/context, it denotes the most low-level information, such as stack traces of code. These logs allow us to examine variable values as well as complete error stacks.
  */
 
-export {}
-
 // log.info
 // log.error
 // log.warn
@@ -62,62 +60,125 @@ export {}
 // Can use import.meta for browser but kinda only works for module files
 // document.currentScript is used for non modules that are imported with the <script> tag
 
-type LogLevels = "INFO" | "ERROR" | "WARN" | "DEBUG" | "FATAL" | "TRACE"
+type LogLevel = 'INFO' | 'ERROR' | 'WARN' | 'DEBUG' | 'FATAL' | 'TRACE'
 
 interface LogEntry {
-  timestamp: string
-  level: LogLevels
-  message: string
-  filename: string
-  [key: string]: any
+	timestamp: string
+	level: LogLevel
+	message: string
+	filename: string
+	[key: string]: any
 }
 
-class Logger {
-  private static _log: LogEntry[] = []
-  private localLog: LogEntry[] = []
-
-  public static init(options?: { file?: string }): Logger {
-    return new Logger(options?.file, Logger._log)
-  }
-
-  private constructor(filename: string = "unknown", log: LogEntry[]) {
-  }
-
-  private pushLog() {}
-
-  //#region Logging methods
-  public info() {}
-  public error() {}
-  public warn() {}
-  public debug() {}
-  public fatal() {}
-  public trace() {}
-  //#endregion
+//! TODO: Move to own file
+export class BasePlugin {
+	// static initialize(): Promise<any> {
+	// return Promise.reject()
+	// }
+	// ... to be added to
 }
 
-const log1 = Logger.init({ file: __filename })
-const log2 = Logger.init({ file: "logger.ts" })
-const log3 = Logger.init()
+//! Why is this being initialized in the init? It doesn't need to be initialized to work
+export class Logger extends BasePlugin {
+	private static _log: LogEntry[] = []
+
+	private constructor(filename: string = 'global') {
+		super()
+		this.filename = filename
+	}
+
+	public static init(options?: { file?: string }): Logger {
+		return new Logger(options?.file)
+	}
+
+	// local filename for each instance
+	private filename: string
+
+	// gets ISO 8601 timestamp
+	private timestamp(): string {
+		return new Date(Date.now()).toISOString()
+	}
+
+	static initialize(): Promise<void> {
+		return new Promise<void>((resolve, _reject) => {
+			Logger.init().info('Starting Logger')
+			resolve()
+		})
+	}
+
+	private pushLog(level: LogLevel, message: string, ...context: any) {
+		let e = {
+			filename: this.filename,
+			level: level,
+			message: message,
+			timestamp: this.timestamp(),
+			...context,
+		}
+		Logger._log.push(e)
+
+		console.log(this.entrytoString(e), e)
+	}
+
+	public entrytoString(entry: LogEntry): string {
+		return `[${entry.timestamp}] ${entry.filename} ${entry.level} :: ${entry.message} ::`
+	}
+
+	public viewLog() {
+		return Logger._log
+	}
+
+	public saveLog(options?: {}) {
+		throw new Error('Saving log has not been implemented yet')
+	}
+
+	//#region Logging methods
+	public info(message: string, ...context: any) {
+		this.pushLog('INFO', message, ...context)
+	}
+	public error(message: string, error?: Error, ...context: any) {
+		// TODO: fix stack trace
+		this.pushLog('ERROR', message, { stack: error?.stack }, ...context)
+	}
+	public warn(message: string, ...context: any) {
+		this.pushLog('WARN', message, ...context)
+	}
+	public debug(message: string, ...context: any) {
+		// Should only be activated if needed, by env variable
+		this.pushLog('DEBUG', message, ...context)
+	}
+	public fatal(message: string, ...context: any) {
+		// TODO: This needs to be a stack trace
+		this.pushLog('FATAL', message, ...context)
+	}
+	public trace(message: string, ...context: any) {
+		// Should only be activated by env variable in dev NOT PROD
+		// TODO: Fix this stack tracer
+		this.pushLog('TRACE', message, { stack: new Error().stack }, ...context)
+	}
+	//#endregion
+}
+
+const log = Logger.init({ file: 'logger' })
 
 // detecting browser type
 let userAgent = navigator.userAgent
 let browserName
 
 if (userAgent.match(/chrome|chromium|crios/i)) {
-  browserName = "chrome"
+	browserName = 'chrome'
 } else if (userAgent.match(/firefox|fxios/i)) {
-  browserName = "firefox"
+	browserName = 'firefox'
 } else if (userAgent.match(/safari/i)) {
-  browserName = "safari"
+	browserName = 'safari'
 } else if (userAgent.match(/opr\//i)) {
-  browserName = "opera"
+	browserName = 'opera'
 } else if (userAgent.match(/edg/i)) {
-  browserName = "edge"
+	browserName = 'edge'
 } else {
-  browserName = "No browser detection"
+	browserName = 'No browser detection'
 }
 
-console.log(browserName)
+log.warn(browserName)
 
 // Meter - Calculates the frequency of events (ex: rate of visitors to your website)
 // Timer - Measures the length of time it takes for a procedure to be completed (ex: your web server response time)
@@ -138,26 +199,26 @@ console.log(browserName)
 // INFO: [<ISO 8601>] INFO <filename> <Message> <JSON Object>
 
 export class BaseError<T extends string> extends Error {
-  name: T
-  message: string
-  cause: any
+	name: T
+	message: string
+	cause: any
 
-  constructor({
-    name,
-    message,
-    cause,
-  }: {
-    name: T
-    message: string
-    cause?: any
-  }) {
-    super()
-    this.name = name
-    this.message = message
-    this.cause = cause
-  }
+	constructor({
+		name,
+		message,
+		cause,
+	}: {
+		name: T
+		message: string
+		cause?: any
+	}) {
+		super()
+		this.name = name
+		this.message = message
+		this.cause = cause
+	}
 }
 
-type ErrorName = "PROJECT_ERROR"
+type ErrorName = 'PROJECT_ERROR'
 
 export class TeamError extends BaseError<ErrorName> {}

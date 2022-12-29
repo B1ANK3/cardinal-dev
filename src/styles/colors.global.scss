@@ -4,55 +4,55 @@ $dark-grey: #121212;
 
 // declare css global variables to use
 :root {
-  --primary: #fff;
+	--primary: #fff;
 }
 
 // https://stackoverflow.com/questions/53579774/how-to-get-values-of-array-in-scss
 
 .dark {
-  --primary: #000;
-  --secondary: #fff;
+	--primary: #000;
+	--secondary: #fff;
 }
 
 .light {
-  --primary: #fff;
-  --secondary: #000;
+	--primary: #fff;
+	--secondary: #000;
 }
 
 $primary: var(--primary);
 $secondary: var(--secondary);
 
 @function getValue($key) {
-  @return map-get($array-map, $key);
+	@return map-get($array-map, $key);
 }
 
 @mixin dp00($bg) {
-  background-color: lighten($bg, 0%);
+	background-color: lighten($bg, 0%);
 }
 @mixin dp01($bg) {
-  background-color: lighten($bg, 5%);
+	background-color: lighten($bg, 5%);
 }
 @mixin dp02($bg) {
-  background-color: lighten($bg, 7%);
+	background-color: lighten($bg, 7%);
 }
 @mixin dp03($bg) {
-  background-color: lighten($bg, 8%);
+	background-color: lighten($bg, 8%);
 }
 @mixin dp04($bg) {
-  background-color: lighten($bg, 9%);
+	background-color: lighten($bg, 9%);
 }
 @mixin dp06($bg) {
-  background-color: lighten($bg, 11%);
+	background-color: lighten($bg, 11%);
 }
 @mixin dp08($bg) {
-  background-color: lighten($bg, 12%);
+	background-color: lighten($bg, 12%);
 }
 @mixin dp12($bg) {
-  background-color: lighten($bg, 14%);
+	background-color: lighten($bg, 14%);
 }
 @mixin dp16($bg) {
-  background-color: lighten($bg, 15%);
+	background-color: lighten($bg, 15%);
 }
 @mixin dp24($bg) {
-  background-color: lighten($bg, 16%);
+	background-color: lighten($bg, 16%);
 }

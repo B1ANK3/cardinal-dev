@@ -39,7 +39,7 @@ async fn close_splashscreen<R: Runtime>(window: tauri::Window<R>) -> bool {
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let update = CustomMenuItem::new("update".to_string(), "Check for Updates");
+    let _update = CustomMenuItem::new("update".to_string(), "Check for Updates");
     let traymenu = SystemTrayMenu::new()
         .add_item(quit)
         .add_native_item(tauri::SystemTrayMenuItem::Separator)
