@@ -1,6 +1,7 @@
 <template>
-	<div class="container">
-		<h1>Welcome to Cardinal</h1>
+	<TopNavBar />
+	<div class="content">
+		<router-view></router-view>
 	</div>
 </template>
 
@@ -9,12 +10,28 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { defineComponent } from 'vue'
 import { invoke } from '@tauri-apps/api'
+import TopNavBar from './components/TopNavBar.vue'
+import { Settings } from './settings'
 
 export default defineComponent({
 	components: {
+		TopNavBar
 	},
 	async mounted() {
 		// vue is loaded and mounted onto page.
+
+		function setTheme(theme:  string | 'dark' | 'light') {
+			if (theme == 'dark') {
+				document.querySelector('#app')?.setAttribute('theme', 'dark')
+			} else if (theme == 'light') {
+				document.querySelector('#app')?.setAttribute('theme', 'light')
+			}
+		}
+
+		Settings.watch('application.theme', theme => {
+			if (typeof theme != 'object') return
+			setTheme(theme.value as string)
+		}, true)
 
 		// close splash screen on tauri
 		invoke('close_splashscreen').then(bool => {
@@ -23,39 +40,22 @@ export default defineComponent({
 			console.log('Splash Screen close not invoke or an error has occurred')
 		})
 
-		// updater
-		// try {
-		// 	const { shouldUpdate, manifest } = await checkUpdate()
-
-		// 	console.log(manifest, shouldUpdate)
-
-		// 	if (shouldUpdate) {
-		// await installUpdate()
-
-		// 		await relaunch()
-		// 	}
-		// } catch (error) {
-		// 	console.log(error)
-		// }
 
 	}
 })
 </script>
 
 <style lang="scss" scoped>
-.container {
-
+.content {
 	width: 100%;
-	height: 100%;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+	// height: 100%;
 
-	h1 {
-		font-size: xx-large;
-		text-align: center;
-	}
+	flex-grow: 1;
+
+	// background-color: #121212;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 </style>

@@ -1,6 +1,6 @@
 [package]
 name = "cardinal"
-version = "0.1.2"
+version = "0.2.1"
 description = "A Cardinal Desktop App"
 authors = ["B1ANK3"]
 license = "MIT"
