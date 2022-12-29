@@ -1,11 +1,11 @@
 {
 	"name": "@cardinal/desktop",
 	"private": true,
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"scripts": {
 		"dev": "vite",
 		"build": "vue-tsc --noEmit && vite build",
-    	"build:helper": "cd settings-manager && yarn run build",
+    	"prebuild": "node scripts/build-helpers.js",
 		"preview": "vite preview",
 		"format": "prettier --check .",
 		"pretty-quick": "pretty-quick && eslint . --fix",
